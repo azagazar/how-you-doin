@@ -101,12 +101,10 @@ export default function HistoryPage() {
 
                     <p className="text-sm font-semibold text-[#2C1A0E] mb-2">{dayTitle}</p>
 
-                    {preview ? (
+                    {preview && (
                       <p className="text-sm text-[#6B5544] line-clamp-2 leading-relaxed font-display italic">
                         &ldquo;{preview}&rdquo;
                       </p>
-                    ) : (
-                      <p className="text-sm text-[#B0A090] italic">{t("history.emptyTitle")}</p>
                     )}
                   </Link>
                 )
