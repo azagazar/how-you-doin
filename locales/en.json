@@ -1,0 +1,177 @@
+{
+  "onboarding": {
+    "description": "Your daily space to pause, reflect, and check in with yourself.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "e.g. Agata",
+    "submit": "Come on in"
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
+  "home": {
+    "title": "How You Doin'?",
+    "couchQuestion": "Who's on your couch today?",
+    "couchHint": "Choose one or two energies that best match your day.",
+    "storySection": "Couch Story",
+    "reflectionSection": "Reflection",
+    "journalSection": "Journal",
+    "journalPlaceholders": [
+      "What's on your mind today?",
+      "What happened today?",
+      "Tell me about your day.",
+      "Anything worth remembering?"
+    ],
+    "saveButton": "Save Entry",
+    "savedButton": "Saved"
+  },
+  "history": {
+    "title": "Journal",
+    "subtitle": "Who visited the couch over time?",
+    "emptyTitle": "The couch is empty.",
+    "emptySubtitle": "Start with today's check-in."
+  },
+  "entryDetail": {
+    "title": "How You Were Doin'",
+    "editButton": "Edit Entry",
+    "saveButton": "Save Changes",
+    "cancelButton": "Cancel",
+    "deleteButton": "Delete Entry",
+    "confirmDelete": "Tap again to confirm delete",
+    "changesSaved": "Changes saved"
+  },
+  "nav": {
+    "checkIn": "Check-In",
+    "journal": "Journal",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language"
+  },
+  "energies": {
+    "monica": { "tagline": "Getting Things Done" },
+    "chandler": { "tagline": "Laughing Through It" },
+    "ross": { "tagline": "Thinking About It Too Much" },
+    "joey": { "tagline": "Enjoying The Moment" },
+    "phoebe": { "tagline": "Trusting The Universe" },
+    "rachel": { "tagline": "Growing Into Something New" }
+  },
+  "stories": {
+    "openCouch": {
+      "dayTitle": "The Open Couch",
+      "story": "The couch is waiting.\n\nYou don't need to know exactly how you feel today.\n\nJust start writing.",
+      "reflection": "What's on your mind right now?"
+    },
+    "single": {
+      "monica": {
+        "dayTitle": "The Getting Things Done Day",
+        "story": "Monica arrived early.\n\nShe already has a list, a backup list, and a plan for tomorrow.\n\nThings are moving forward, even if they don't feel finished yet.",
+        "reflection": "What have you accomplished today that deserves recognition?"
+      },
+      "chandler": {
+        "dayTitle": "The Laughing Through It Day",
+        "story": "Chandler is here today.\n\nHe's keeping the conversation light, even when something heavier sits in the background.\n\nNot everything needs to be solved right now.",
+        "reflection": "What feeling are you avoiding by making a joke out of it?"
+      },
+      "ross": {
+        "dayTitle": "The Overthinking Day",
+        "story": "Ross is here today.\n\nHe's replaying conversations, analysing details, and trying to make sense of everything.\n\nSome questions are still looking for answers.",
+        "reflection": "What are you worrying about that might already be good enough?"
+      },
+      "joey": {
+        "dayTitle": "The Living In The Moment Day",
+        "story": "Joey is here today.\n\nHe's not worried about tomorrow.\n\nRight now there is food, a comfortable couch, and enough reasons to enjoy the day.",
+        "reflection": "What simple thing brought you joy today?"
+      },
+      "phoebe": {
+        "dayTitle": "The Trusting The Universe Day",
+        "story": "Phoebe is here today.\n\nShe doesn't know exactly where the day is going, but somehow she's okay with that.\n\nNot every answer needs to arrive immediately.",
+        "reflection": "What happens when you stop trying to control everything?"
+      },
+      "rachel": {
+        "dayTitle": "The Becoming Day",
+        "story": "Rachel is here today.\n\nShe's looking ahead, imagining possibilities and thinking about what comes next.\n\nGrowth rarely feels comfortable while it's happening.",
+        "reflection": "What part of your future self are you building today?"
+      }
+    },
+    "pairs": {
+      "chandler_monica": {
+        "dayTitle": "The Keeping It Together Day",
+        "story": "Monica straightened the cushions.\n\nChandler made a joke before anyone noticed he was tired.\n\nNeither of them mentioned how much they were carrying today.",
+        "reflection": "What would happen if you let yourself rest for a moment?"
+      },
+      "monica_ross": {
+        "dayTitle": "The Overthinking Day",
+        "story": "Monica made a plan.\n\nRoss reviewed it three times.\n\nTogether they spent the day trying to make sure everything would work out perfectly.",
+        "reflection": "What are you worrying about that might already be good enough?"
+      },
+      "joey_monica": {
+        "dayTitle": "The Balanced Day",
+        "story": "Monica got things done.\n\nJoey reminded her to enjoy the moment.\n\nSomewhere between responsibility and fun, the day found its rhythm.",
+        "reflection": "Did you leave enough room for joy today?"
+      },
+      "monica_phoebe": {
+        "dayTitle": "The Beautiful Chaos Day",
+        "story": "Monica brought structure.\n\nPhoebe brought spontaneity.\n\nTogether they discovered that not everything needs a plan.",
+        "reflection": "What unexpected thing made today better?"
+      },
+      "monica_rachel": {
+        "dayTitle": "The Ambition Day",
+        "story": "Monica focused on the details.\n\nRachel focused on the destination.\n\nNeither of them planned on slowing down.",
+        "reflection": "What are you working toward right now?"
+      },
+      "chandler_ross": {
+        "dayTitle": "The Overthinking With Jokes Day",
+        "story": "Ross kept analysing.\n\nChandler kept making jokes.\n\nBoth were trying to make sense of something they couldn't quite let go of.",
+        "reflection": "What feeling are you hiding behind humour today?"
+      },
+      "chandler_joey": {
+        "dayTitle": "The Good Vibes Day",
+        "story": "Joey laughed first.\n\nChandler followed.\n\nFor a while, life felt lighter than usual.",
+        "reflection": "What made you smile today?"
+      },
+      "chandler_phoebe": {
+        "dayTitle": "The Unexpected Day",
+        "story": "Phoebe followed her intuition.\n\nChandler questioned everything.\n\nThe conversation somehow made perfect sense.",
+        "reflection": "What surprised you today?"
+      },
+      "chandler_rachel": {
+        "dayTitle": "The Spotlight Day",
+        "story": "Rachel walked confidently into the room.\n\nChandler immediately made everyone laugh.\n\nPeople noticed them both for different reasons.",
+        "reflection": "When do you feel most like yourself?"
+      },
+      "joey_ross": {
+        "dayTitle": "The Perspective Day",
+        "story": "Ross worried about tomorrow.\n\nJoey focused on today.\n\nTogether they found a balance between planning and living.",
+        "reflection": "Are you spending too much time in the future?"
+      },
+      "phoebe_ross": {
+        "dayTitle": "The Meaning Of It All Day",
+        "story": "Ross searched for answers.\n\nPhoebe searched for signs.\n\nNeither agreed on how the world worked, but both stayed curious.",
+        "reflection": "What are you trying to understand right now?"
+      },
+      "rachel_ross": {
+        "dayTitle": "The Moving Forward Day",
+        "story": "Ross kept looking back.\n\nRachel kept looking ahead.\n\nTogether they tried to understand what comes next.",
+        "reflection": "What lesson from the past can help you move forward?"
+      },
+      "joey_phoebe": {
+        "dayTitle": "The Go With The Flow Day",
+        "story": "Joey brought pizza.\n\nPhoebe brought a strange story about the universe.\n\nNeither of them had a plan.\n\nAnd somehow that worked out just fine.",
+        "reflection": "What happened today when you stopped trying to control everything?"
+      },
+      "joey_rachel": {
+        "dayTitle": "The Main Character Day",
+        "story": "Rachel loved the excitement.\n\nJoey loved the adventure.\n\nToday felt like something worth remembering.",
+        "reflection": "What was today's highlight?"
+      },
+      "phoebe_rachel": {
+        "dayTitle": "The Reinvention Day",
+        "story": "Rachel looked toward the future.\n\nPhoebe trusted the journey.\n\nNeither knew exactly where they were going.\n\nThat didn't stop them from moving forward.",
+        "reflection": "What new version of yourself is starting to emerge?"
+      }
+    }
+  }
+}
