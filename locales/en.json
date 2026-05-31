@@ -30,7 +30,9 @@
     "title": "Journal",
     "subtitle": "Who visited the couch over time?",
     "emptyTitle": "The couch is empty.",
-    "emptySubtitle": "Start with today's check-in."
+    "emptySubtitle": "Start with today's check-in.",
+    "noNote": "No note added.",
+    "couchWaiting": "The couch is waiting."
   },
   "entryDetail": {
     "title": "How You Were Doin'",

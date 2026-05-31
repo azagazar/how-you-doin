@@ -30,7 +30,9 @@
     "title": "Historia kanapy",
     "subtitle": "Kto odwiedzał Twoją kanapę?",
     "emptyTitle": "Na kanapie jeszcze nikt nie siedział.",
-    "emptySubtitle": "Zacznij od pierwszego wpisu."
+    "emptySubtitle": "Zacznij od pierwszego wpisu.",
+    "noNote": "Brak notatki.",
+    "couchWaiting": "Kanapa czeka."
   },
   "entryDetail": {
     "title": "Jak minął ten dzień?",
