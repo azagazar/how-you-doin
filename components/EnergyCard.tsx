@@ -19,18 +19,16 @@ export function EnergyCard({ energy, selected, onClick, size = "md" }: Props) {
     <button
       onClick={onClick}
       className={cn(
-        "energy-card rounded-2xl border flex flex-col items-center transition-all",
-        size === "md" ? "p-3 gap-2 min-w-[88px]" : "p-2 gap-1 min-w-[72px]",
-        selected
-          ? `${energy.borderColor} ${energy.bgColor}/20 selected`
-          : "border-[#D4C4B0] bg-[#FBF5EC]",
+        "energy-card flex flex-col items-center transition-all",
+        "border border-[#6a4f79] border-b-4 overflow-hidden",
+        selected ? "bg-[#fde52f]" : "bg-[#f7f3ec]",
+        size === "md" ? "p-2 gap-1.5" : "p-1.5 gap-1",
       )}
     >
       <div
         className={cn(
-          "rounded-xl flex items-center justify-center overflow-hidden transition-all",
-          size === "md" ? "w-12 h-12" : "w-9 h-9",
-          selected ? `${energy.bgColor}/15` : "bg-white/60",
+          "flex items-center justify-center overflow-hidden",
+          size === "md" ? "w-[72px] h-[72px]" : "w-[48px] h-[48px]",
         )}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -41,27 +39,19 @@ export function EnergyCard({ energy, selected, onClick, size = "md" }: Props) {
           className="w-full h-full object-contain select-none"
         />
       </div>
-      <div className="flex flex-col items-center gap-0.5">
-        <span
-          className={cn(
-            "font-semibold leading-tight",
-            size === "md" ? "text-xs" : "text-[10px]",
-            selected ? energy.textColor : "text-[#4A3728]",
-          )}
-        >
-          {energy.name}
-        </span>
-        {size === "md" && (
-          <span
-            className={cn(
-              "text-[9px] leading-tight text-center",
-              selected ? `${energy.textColor} opacity-75` : "text-[#9B8878]",
-            )}
-          >
-            {tagline}
-          </span>
+      <span
+        className={cn(
+          "font-display text-black leading-none uppercase",
+          size === "md" ? "text-xl" : "text-base",
         )}
-      </div>
+      >
+        {energy.name}
+      </span>
+      {size === "md" && (
+        <span className="font-serif text-[#423b35] text-xs text-center leading-tight">
+          {tagline}
+        </span>
+      )}
     </button>
   )
 }

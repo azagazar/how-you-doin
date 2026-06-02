@@ -84,7 +84,7 @@ export default function EntryDetailPage() {
   const editStory = getCouchStory(primaryEnergy, secondaryEnergy, lang)
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#F5EFE6]">
+    <div className="min-h-dvh flex flex-col bg-[#ece7df]">
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-lg mx-auto px-5 pt-8 pb-10 space-y-6">
           <button

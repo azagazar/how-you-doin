@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { setUserName } from "@/lib/storage"
 import { useI18n } from "@/lib/i18n"
-import { Button } from "@/components/ui/button"
+import { SectionTag } from "@/components/SectionTag"
 
 export default function OnboardingPage() {
   const [name, setName] = useState("")
@@ -20,52 +20,77 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center px-6 py-12 bg-[#F5EFE6]">
-      <div className="w-full max-w-sm flex flex-col items-center gap-8">
-        <div className="text-center space-y-3">
-          <div className="flex justify-center mb-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/branding/friends-frame.png"
-              alt="How You Doin'?"
-              className="w-40 h-auto"
-            />
-          </div>
-          <h1 className="font-display text-4xl font-bold text-[#2C1A0E]">How You Doin&apos;?</h1>
-          <div className="text-[#6B5544] text-base leading-relaxed space-y-1">
-            {t("onboarding.description").split("\n\n").map((line, i) => (
-              <p key={i}>{line}</p>
-            ))}
-          </div>
+    <main className="min-h-dvh flex flex-col items-center justify-center px-5 py-10 bg-[#ece7df]">
+      <div className="w-full max-w-sm flex flex-col items-center gap-6">
+
+        {/* Couch image */}
+        <div className="flex justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/branding/couch.png"
+            alt="The couch"
+            className="w-52 h-auto"
+          />
         </div>
 
-        <div className="w-full bg-[#EDE3D8] rounded-3xl p-6 space-y-5">
-          <div className="text-center space-y-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/coffee.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain mx-auto" />
-            <p className="text-sm text-[#6B5544]">{t("onboarding.nameLabel")}</p>
-          </div>
+        {/* Heading */}
+        <h1 className="font-display text-6xl text-black text-center uppercase leading-none">
+          {t("home.title")}
+        </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t("onboarding.namePlaceholder")}
-                autoFocus
-                className="w-full rounded-xl border-2 border-[#E8DDD0] bg-white/80 px-4 py-3 text-[#2C1A0E] placeholder:text-[#B0A090] focus:outline-none focus:border-[#6B4F7A] transition-colors text-base"
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={!name.trim()}
-              className="w-full bg-[#6B4F7A] hover:bg-[#5A3F68] text-white rounded-xl py-3 text-base font-semibold disabled:opacity-40"
-            >
-              {t("onboarding.submit")}
-            </Button>
-          </form>
+        {/* Subtitle */}
+        <p className="font-serif text-xl text-black text-center">
+          {t("onboarding.description").split("\n\n")[0]}
+        </p>
+
+        {/* Card with section tag */}
+        <div className="w-full">
+          <div className="flex justify-center relative z-10 -mb-5">
+            <SectionTag label="First Things First" />
+          </div>
+          <div className="figma-card pt-7 pb-6 px-6 flex flex-col items-center gap-4">
+            {/* Coffee icon */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/icons/coffee.png"
+              alt=""
+              aria-hidden="true"
+              className="w-10 h-10 object-contain"
+            />
+
+            {/* Who's joining */}
+            <p className="font-serif text-xl text-black text-center">
+              {t("onboarding.nameLabel")}
+            </p>
+
+            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+              {/* Name input */}
+              <div className="border border-[#6a4f79] bg-[#faf8f4]">
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("onboarding.namePlaceholder")}
+                  autoFocus
+                  className="w-full px-4 py-3 bg-transparent font-serif text-lg text-black placeholder:text-[#938d8d] focus:outline-none"
+                />
+              </div>
+
+              {/* Submit button */}
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  disabled={!name.trim()}
+                  className="figma-btn"
+                >
+                  <span className="font-display text-[#fde52f] text-2xl leading-none uppercase">
+                    {t("onboarding.submit")}
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </main>

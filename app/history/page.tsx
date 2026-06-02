@@ -17,7 +17,7 @@ function formatDate(dateStr: string, lang: string): string {
     day: "numeric",
     month: "long",
     year: "numeric",
-  })
+  }).toUpperCase()
 }
 
 function stripHtml(html: string): string {
@@ -38,12 +38,18 @@ export default function HistoryPage() {
   }, [router])
 
   return (
-    <div className="min-h-dvh flex flex-col pb-24 bg-[#F5EFE6]">
+    <div className="min-h-dvh flex flex-col pb-24 bg-[#ece7df]">
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-lg mx-auto px-5 pt-10 pb-6 space-y-6">
-          <div className="space-y-0.5">
-            <h1 className="font-display text-4xl font-bold text-[#2C1A0E]">{t("history.title")}</h1>
-            <p className="font-display italic text-xl text-[#6B5544]">{t("history.subtitle")}</p>
+        <div className="max-w-lg mx-auto px-5 pt-8 pb-6 space-y-6">
+
+          {/* Header */}
+          <div className="space-y-1">
+            <h1 className="font-display text-5xl text-black uppercase leading-none">
+              {t("history.title")}
+            </h1>
+            <p className="font-serif text-2xl text-black">
+              {t("history.subtitle")}
+            </p>
           </div>
 
           {entries.length === 0 ? (
@@ -54,16 +60,16 @@ export default function HistoryPage() {
                 alt=""
                 aria-hidden="true"
                 className="mx-auto"
-                style={{ width: 140, opacity: 0.45, filter: "sepia(0.2)" }}
+                style={{ width: 140, opacity: 0.45 }}
                 draggable={false}
               />
               <div className="space-y-1">
-                <p className="text-[#9B8878] font-medium">{t("history.emptyTitle")}</p>
-                <p className="text-sm text-[#B0A090]">{t("history.emptySubtitle")}</p>
+                <p className="font-display text-2xl text-black uppercase">{t("history.emptyTitle")}</p>
+                <p className="font-serif text-base text-[#938d8d]">{t("history.emptySubtitle")}</p>
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {entries.map((entry) => {
                 const preview = stripHtml(entry.content)
                 const story = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy, lang)
@@ -73,45 +79,49 @@ export default function HistoryPage() {
                   <Link
                     key={entry.id}
                     href={`/entry/${entry.id}`}
-                    className="block rounded-2xl p-4 transition-all hover:scale-[1.01]"
-                    style={{
-                      background: "#FBF5EC",
-                      border: "1px solid #D4C4B0",
-                      boxShadow: "0 4px 16px rgba(100,70,40,0.11), 0 1px 3px rgba(100,70,40,0.07)",
-                    }}
+                    className="block figma-card transition-all hover:opacity-90"
                   >
-                    <p className="text-[11px] font-semibold text-[#9B7B5B] uppercase tracking-wider mb-3">
-                      {formatDate(entry.date, lang)}
-                    </p>
+                    <div className="p-5 space-y-3">
+                      {/* Date */}
+                      <p className="font-display text-xl text-black uppercase leading-none">
+                        {formatDate(entry.date, lang)}
+                      </p>
 
-                    <div className="flex justify-center mb-3">
-                      <MiniCouch
-                        primary={entry.primaryEnergy}
-                        secondary={entry.secondaryEnergy}
-                        width={148}
-                      />
-                    </div>
-
-                    {(entry.primaryEnergy || entry.secondaryEnergy) && (
-                      <div className="flex gap-2 flex-wrap mb-2">
-                        {entry.primaryEnergy && <EnergyBadge energy={entry.primaryEnergy} size="sm" />}
-                        {entry.secondaryEnergy && <EnergyBadge energy={entry.secondaryEnergy} size="sm" />}
+                      {/* Mini couch with characters */}
+                      <div className="flex justify-center">
+                        <MiniCouch
+                          primary={entry.primaryEnergy}
+                          secondary={entry.secondaryEnergy}
+                          width={200}
+                        />
                       </div>
-                    )}
 
-                    <p className="text-sm font-semibold text-[#2C1A0E] mb-2">{dayTitle}</p>
+                      {/* Energy badges */}
+                      {(entry.primaryEnergy || entry.secondaryEnergy) && (
+                        <div className="flex gap-2 flex-wrap">
+                          {entry.primaryEnergy && <EnergyBadge energy={entry.primaryEnergy} size="sm" />}
+                          {entry.secondaryEnergy && <EnergyBadge energy={entry.secondaryEnergy} size="sm" />}
+                        </div>
+                      )}
 
-                    {preview ? (
-                      <p className="text-sm text-[#6B5544] line-clamp-2 leading-relaxed font-display italic">
-                        &ldquo;{preview}&rdquo;
+                      {/* Day title */}
+                      <p className="font-display text-xl text-black uppercase leading-tight">
+                        {dayTitle}
                       </p>
-                    ) : (
-                      <p className="text-sm text-[#B0A090] italic">
-                        {entry.primaryEnergy || entry.secondaryEnergy
-                          ? t("history.noNote")
-                          : t("history.couchWaiting")}
-                      </p>
-                    )}
+
+                      {/* Note preview */}
+                      {preview ? (
+                        <p className="font-serif text-base text-black line-clamp-2 leading-relaxed">
+                          {preview}
+                        </p>
+                      ) : (
+                        <p className="font-serif text-base text-[#938d8d]">
+                          {entry.primaryEnergy || entry.secondaryEnergy
+                            ? t("history.noNote")
+                            : t("history.couchWaiting")}
+                        </p>
+                      )}
+                    </div>
                   </Link>
                 )
               })}

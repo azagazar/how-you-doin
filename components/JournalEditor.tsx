@@ -16,13 +16,13 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: placeholder ?? "What's on your mind today?" }),
+      Placeholder.configure({ placeholder: placeholder ?? "Co warto zapamiętać z dzisiejszego dnia?" }),
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
-        class: "tiptap prose prose-sm max-w-none focus:outline-none min-h-[120px] text-[#2C1A0E]",
+        class: "tiptap font-serif text-base focus:outline-none min-h-[140px] text-black",
       },
     },
   })
@@ -34,7 +34,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
   }, [content, editor])
 
   return (
-    <div className="rounded-xl border-2 border-[#E8DDD0] bg-white/70 px-4 py-3 focus-within:border-[#6B4F7A] transition-colors">
+    <div className="border border-[#6a4f79] border-b-4 bg-[#faf8f4] px-4 py-3">
       <EditorContent editor={editor} />
     </div>
   )
