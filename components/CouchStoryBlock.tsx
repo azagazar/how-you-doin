@@ -19,7 +19,7 @@ export function CouchStoryBlock({ story }: Props) {
           <SectionTag label={t("home.storySection")} />
         </div>
         <div className="figma-card pt-6 pb-5 px-5">
-          <h2 className="font-display text-2xl text-black text-center uppercase leading-tight mb-3">
+          <h2 className="font-display text-2xl text-black text-center uppercase leading-tight mb-3 mt-[10px]">
             {story.dayTitle}
           </h2>
           <div className="space-y-2 text-center">
