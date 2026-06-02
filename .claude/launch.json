@@ -3,10 +3,11 @@
   "configurations": [
     {
       "name": "how-you-doin",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/Users/agatazarod/Desktop/week-1/how-you-doin/node_modules/.bin/next", "dev"],
       "port": 3000,
-      "autoPort": true
+      "autoPort": true,
+      "cwd": "/Users/agatazarod/Desktop/week-1/how-you-doin"
     }
   ]
 }

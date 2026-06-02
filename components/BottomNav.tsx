@@ -54,7 +54,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-[#ece7df]"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-[#ece7df] lg:hidden"
       style={{ boxShadow: "0px -2px 8px rgba(106,79,121,0.12)" }}
     >
       <div className="max-w-lg mx-auto flex safe-area-pb">

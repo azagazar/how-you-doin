@@ -2,14 +2,16 @@
 
 import { useI18n } from "@/lib/i18n"
 import { BottomNav } from "@/components/BottomNav"
+import { DesktopNav } from "@/components/DesktopNav"
 
 export default function SettingsPage() {
   const { lang, setLang, t } = useI18n()
 
   return (
-    <div className="min-h-dvh flex flex-col pb-24 bg-[#ece7df]">
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-lg mx-auto px-5 pt-10 pb-6 space-y-8">
+    <div className="h-dvh flex flex-col bg-[#ece7df]">
+      <DesktopNav />
+      <div className="flex-1 overflow-y-auto pb-24 lg:pb-6">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-10 pb-6 space-y-8">
           <h1 className="font-display text-5xl text-black uppercase leading-none">{t("settings.title")}</h1>
 
           <div className="space-y-3">

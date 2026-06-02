@@ -12,6 +12,7 @@ import { CouchSelector } from "@/components/CouchSelector"
 import { CouchStoryBlock } from "@/components/CouchStoryBlock"
 import { JournalEditor } from "@/components/JournalEditor"
 import { BottomNav } from "@/components/BottomNav"
+import { DesktopNav } from "@/components/DesktopNav"
 
 function formatDateBar(lang: string): string {
   const d = new Date()
@@ -93,8 +94,9 @@ export default function CheckInPage() {
   const greeting = t(`greeting.${greetingKey}`)
 
   return (
-    <div className="min-h-dvh flex flex-col pb-24 bg-[#ece7df]">
-      <div className="flex-1 overflow-y-auto">
+    <div className="h-dvh flex flex-col bg-[#ece7df]">
+      <DesktopNav />
+      <div className="flex-1 overflow-y-auto pb-24 lg:pb-6">
 
         {/* Header */}
         <div className="pt-5 pb-2 text-center px-5">
@@ -104,14 +106,14 @@ export default function CheckInPage() {
         </div>
 
         {/* Date bar — container width, yellow */}
-        <div className="max-w-lg mx-auto bg-[#fde52f] border-t border-b-4 border-l border-r border-[#6a4f79] flex items-center justify-center h-9">
+        <div className="max-w-lg lg:max-w-2xl mx-auto bg-[#fde52f] border-t border-b-4 border-l border-r border-[#6a4f79] flex items-center justify-center h-9">
           <p className="font-date italic text-[#6a4f79] text-lg leading-none">
             {formatDateBar(lang)}
           </p>
         </div>
 
         {/* Padded content */}
-        <div className="max-w-lg mx-auto px-5 pt-5 pb-6 space-y-5">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-5 pb-6 space-y-5">
 
           {/* Greeting */}
           <p className="font-display text-2xl text-black uppercase">
@@ -172,7 +174,7 @@ export default function CheckInPage() {
         </div>
 
         {/* Quote bar — matches padded container width */}
-        <div className="max-w-lg mx-auto px-5 mt-2">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 mt-2">
           <div className="border-4 border-[#6a4f79] bg-[#fde52f] flex items-start gap-4 px-6 py-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
