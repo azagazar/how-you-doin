@@ -1,7 +1,9 @@
 import { JournalEntry } from "./types"
+import { supabase } from "./supabase"
 
-const ENTRIES_KEY = "hyd_entries"
 const NAME_KEY = "hyd_name"
+
+// ─── User name (stays in localStorage) ──────────────────────────────────────
 
 export function getUserName(): string | null {
   if (typeof window === "undefined") return null
@@ -12,34 +14,87 @@ export function setUserName(name: string): void {
   localStorage.setItem(NAME_KEY, name)
 }
 
-export function getEntries(): JournalEntry[] {
-  if (typeof window === "undefined") return []
-  try {
-    return JSON.parse(localStorage.getItem(ENTRIES_KEY) || "[]")
-  } catch {
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+type DbRow = {
+  id: string
+  user_id: string
+  date: string
+  primary_energy: string | null
+  secondary_energy: string | null
+  content: string
+  created_at: string
+}
+
+function toEntry(row: DbRow): JournalEntry {
+  return {
+    id: row.id,
+    date: row.date,
+    primaryEnergy: (row.primary_energy as JournalEntry["primaryEnergy"]) ?? undefined,
+    secondaryEnergy: (row.secondary_energy as JournalEntry["secondaryEnergy"]) ?? undefined,
+    content: row.content,
+    createdAt: row.created_at,
+  }
+}
+
+// ─── CRUD ────────────────────────────────────────────────────────────────────
+
+export async function getEntries(): Promise<JournalEntry[]> {
+  const { data, error } = await supabase
+    .from("journal_entries")
+    .select("*")
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    console.error("getEntries error:", error)
     return []
   }
+  return (data as DbRow[]).map(toEntry)
 }
 
-export function saveEntry(entry: JournalEntry): void {
-  const entries = getEntries()
-  const idx = entries.findIndex((e) => e.id === entry.id)
-  if (idx >= 0) {
-    entries[idx] = entry
-  } else {
-    entries.unshift(entry)
+export async function saveEntry(entry: JournalEntry): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Not authenticated")
+
+  const { error } = await supabase
+    .from("journal_entries")
+    .upsert({
+      id: entry.id,
+      user_id: user.id,
+      date: entry.date,
+      primary_energy: entry.primaryEnergy ?? null,
+      secondary_energy: entry.secondaryEnergy ?? null,
+      content: entry.content,
+      created_at: entry.createdAt,
+    })
+
+  if (error) throw error
+}
+
+export async function deleteEntry(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("journal_entries")
+    .delete()
+    .eq("id", id)
+
+  if (error) throw error
+}
+
+export async function getEntryByDate(date: string): Promise<JournalEntry | undefined> {
+  const { data, error } = await supabase
+    .from("journal_entries")
+    .select("*")
+    .eq("date", date)
+    .maybeSingle()
+
+  if (error) {
+    console.error("getEntryByDate error:", error)
+    return undefined
   }
-  localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries))
+  return data ? toEntry(data as DbRow) : undefined
 }
 
-export function deleteEntry(id: string): void {
-  const entries = getEntries().filter((e) => e.id !== id)
-  localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries))
-}
-
-export function getEntryByDate(date: string): JournalEntry | undefined {
-  return getEntries().find((e) => e.date === date)
-}
+// ─── Utilities ────────────────────────────────────────────────────────────────
 
 export function getTodayDate(): string {
   return new Date().toISOString().split("T")[0]

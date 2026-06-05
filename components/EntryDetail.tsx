@@ -39,19 +39,23 @@ export function EntryDetail({ id, onDelete }: Props) {
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   useEffect(() => {
-    setEditing(false)
-    setSaved(false)
-    setConfirmDelete(false)
-    const found = getEntries().find((e) => e.id === id)
-    if (!found) {
-      if (onDelete) onDelete()
-      else router.replace("/history")
-      return
+    async function load() {
+      setEditing(false)
+      setSaved(false)
+      setConfirmDelete(false)
+      const entries = await getEntries()
+      const found = entries.find((e) => e.id === id)
+      if (!found) {
+        if (onDelete) onDelete()
+        else router.replace("/history")
+        return
+      }
+      setEntry(found)
+      setPrimaryEnergy(found.primaryEnergy)
+      setSecondaryEnergy(found.secondaryEnergy)
+      setContent(found.content)
     }
-    setEntry(found)
-    setPrimaryEnergy(found.primaryEnergy)
-    setSecondaryEnergy(found.secondaryEnergy)
-    setContent(found.content)
+    load()
   }, [id, router, onDelete])
 
   function handleEnergySelect(key: EnergyKey) {
@@ -71,19 +75,19 @@ export function EntryDetail({ id, onDelete }: Props) {
     }
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!entry) return
     const updated: JournalEntry = { ...entry, primaryEnergy, secondaryEnergy, content }
-    saveEntry(updated)
+    await saveEntry(updated)
     setEntry(updated)
     setEditing(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!confirmDelete) { setConfirmDelete(true); return }
-    deleteEntry(id)
+    await deleteEntry(id)
     if (onDelete) onDelete()
     else router.replace("/history")
   }
@@ -199,7 +203,7 @@ export function EntryDetail({ id, onDelete }: Props) {
             <div className="flex justify-center">
               <button
                 onClick={handleDelete}
-                className="flex items-center justify-center border border-red-400 border-b-4 py-2 bg-transparent hover:opacity-70 transition-opacity cursor-pointer"
+                className="flex items-center justify-center border border-red-400 py-2 bg-transparent hover:opacity-70 transition-opacity cursor-pointer"
                 style={{ width: 185 }}
               >
                 <span className="font-display text-red-500 text-2xl leading-none uppercase translate-y-[2px]">

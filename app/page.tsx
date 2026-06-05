@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
+import { supabase } from "@/lib/supabase"
 import { EnergyKey } from "@/lib/types"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
 import { getCouchStory } from "@/lib/couchStories"
@@ -40,19 +41,30 @@ export default function CheckInPage() {
   })
 
   useEffect(() => {
-    const name = getUserName()
-    if (!name) {
-      router.replace("/onboarding")
-      return
-    }
-    setUserName(name)
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.replace("/login")
+        return
+      }
 
-    const today = getTodayDate()
-    const existing = getEntryByDate(today)
-    if (existing) {
-      setContent(existing.content)
-      setExistingId(existing.id)
+      const name = getUserName()
+      if (!name) {
+        router.replace("/onboarding")
+        return
+      }
+      setUserName(name)
+
+      const today = getTodayDate()
+      const existing = await getEntryByDate(today)
+      if (existing) {
+        setContent(existing.content)
+        setPrimaryEnergy(existing.primaryEnergy)
+        setSecondaryEnergy(existing.secondaryEnergy)
+        setExistingId(existing.id)
+      }
     }
+    init()
   }, [router])
 
   const handleEnergySelect = useCallback((key: EnergyKey) => {
@@ -73,9 +85,9 @@ export default function CheckInPage() {
     }
   }, [primaryEnergy, secondaryEnergy])
 
-  function handleSave() {
+  async function handleSave() {
     const today = getTodayDate()
-    saveEntry({
+    await saveEntry({
       id: existingId ?? (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36)),
       date: today,
       primaryEnergy,

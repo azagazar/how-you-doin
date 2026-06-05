@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getEntries, getUserName } from "@/lib/storage"
+import { supabase } from "@/lib/supabase"
 import { JournalEntry } from "@/lib/types"
 import { getCouchStory } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
@@ -32,15 +33,23 @@ export default function HistoryPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!getUserName()) {
-      router.replace("/onboarding")
-      return
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.replace("/login")
+        return
+      }
+      if (!getUserName()) {
+        router.replace("/onboarding")
+        return
+      }
+      const loaded = await getEntries()
+      setEntries(loaded)
+      if (loaded.length > 0 && window.innerWidth >= 1024) {
+        setSelectedId(loaded[0].id)
+      }
     }
-    const loaded = getEntries()
-    setEntries(loaded)
-    if (loaded.length > 0 && window.innerWidth >= 1024) {
-      setSelectedId(loaded[0].id)
-    }
+    init()
   }, [router])
 
   function handleEntryClick(id: string) {
@@ -148,8 +157,8 @@ export default function HistoryPage() {
           {selectedId ? (
             <EntryDetail
               id={selectedId}
-              onDelete={() => {
-                setEntries(getEntries())
+              onDelete={async () => {
+                setEntries(await getEntries())
                 setSelectedId(null)
               }}
             />
