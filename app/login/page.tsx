@@ -112,18 +112,11 @@ export default function LoginPage() {
             {/* Demo button */}
             <button
               onClick={handleDemoMode}
-              className="w-full flex items-center justify-center gap-3 border border-[#6a4f79] border-b-4 bg-[#f7f3ec] hover:opacity-90 transition-opacity"
+              className="w-full flex items-center justify-center bg-[#6a4f79] hover:opacity-90 transition-opacity"
               style={{ minHeight: 52 }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/branding/couch.png"
-                alt=""
-                aria-hidden="true"
-                style={{ height: 24, width: "auto" }}
-              />
-              <span className="font-display text-[#6a4f79] text-2xl leading-none uppercase translate-y-[2px]">
-                Try Demo Mode
+              <span className="font-display text-[#fde52f] text-2xl leading-none uppercase translate-y-[2px]">
+                Explore Demo
               </span>
             </button>
           </div>
