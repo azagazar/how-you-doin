@@ -142,7 +142,7 @@ export default function LoginPage() {
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-fill"
             />
-            <p className="relative font-serif italic text-sm text-[#6a4f79] text-center px-6">
+            <p className="relative italic text-sm text-[#6a4f79] text-center" style={{ fontFamily: "var(--font-caveat)", padding: 10 }}>
               Demo mode lets you explore the app without creating an account.
             </p>
           </div>

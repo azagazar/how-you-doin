@@ -40,7 +40,7 @@ export default function OnboardingPage() {
 
         {/* Subtitle */}
         <p className="font-serif text-xl text-black text-center">
-          {t("onboarding.description").split("\n\n")[0]}
+          Who&apos;s sitting on your couch today?
         </p>
 
         {/* Card with section tag */}
