@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Geist, League_Gothic, Cormorant_Infant } from "next/font/google"
+import { Geist, League_Gothic, Cormorant_Infant, Special_Elite } from "next/font/google"
 import { I18nProvider } from "@/lib/i18n"
 import { SwRegister } from "./sw-register"
 import "./globals.css"
@@ -11,6 +11,12 @@ const cormorantInfant = Cormorant_Infant({
   subsets: ["latin"],
   weight: ["500"],
   style: ["italic"],
+})
+
+const specialElite = Special_Elite({
+  variable: "--font-special-elite",
+  subsets: ["latin"],
+  weight: "400",
 })
 
 export const metadata: Metadata = {
@@ -30,7 +36,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${leagueGothic.variable} ${cormorantInfant.variable} h-full`}>
+    <html lang="en" className={`${geist.variable} ${leagueGothic.variable} ${cormorantInfant.variable} ${specialElite.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
         <I18nProvider>{children}</I18nProvider>
         <SwRegister />
