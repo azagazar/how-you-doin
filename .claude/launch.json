@@ -6,7 +6,7 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["/Users/agatazarod/Desktop/week-1/how-you-doin/node_modules/.bin/next", "dev"],
       "port": 3000,
-      "autoPort": true,
+      "autoPort": false,
       "cwd": "/Users/agatazarod/Desktop/week-1/how-you-doin"
     }
   ]
