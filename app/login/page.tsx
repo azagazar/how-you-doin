@@ -1,9 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
+import { setDemoMode } from "@/lib/demo"
+import { SectionTag } from "@/components/SectionTag"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,9 +26,14 @@ export default function LoginPage() {
     }
   }
 
+  function handleDemoMode() {
+    setDemoMode(true)
+    router.push("/onboarding")
+  }
+
   return (
     <main className="min-h-dvh flex flex-col items-center justify-center px-5 py-10 bg-[#ece7df]">
-      <div className="w-full max-w-sm flex flex-col items-center gap-8">
+      <div className="w-full max-w-sm flex flex-col items-center gap-6">
 
         {/* Couch */}
         <div className="flex justify-center">
@@ -41,26 +50,104 @@ export default function LoginPage() {
           How You Doin&apos;?
         </h1>
 
+        {/* Subtitle */}
+        <p className="font-serif text-xl text-black text-center">
+          Your daily space to pause,<br />reflect, and check in with yourself.
+        </p>
+
         {/* Card */}
-        <div className="w-full figma-card px-6 py-8 flex flex-col items-center gap-5">
-          <p className="font-serif text-xl text-black text-center">
-            Sign in to keep your check-ins safe and in sync.
-          </p>
+        <div className="w-full">
+          <div className="flex justify-center relative z-10 -mb-5">
+            <SectionTag label="First Things First" />
+          </div>
 
-          {error && (
-            <p className="font-serif text-sm text-red-500 text-center">{error}</p>
-          )}
+          <div className="figma-card pt-7 pb-6 px-6 flex flex-col items-center gap-5">
+            {/* Coffee icon */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/icons/coffee.png"
+              alt=""
+              aria-hidden="true"
+              className="w-10 h-10 object-contain"
+            />
 
-          <button
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="figma-btn w-full disabled:opacity-60"
-          >
-            <span className="font-display text-[#fde52f] text-2xl leading-none uppercase translate-y-[2px]">
-              {loading ? "Loading…" : "Sign in with Google"}
-            </span>
-          </button>
+            <p className="font-serif text-xl text-black text-center">
+              Let&apos;s get you in.<br />Choose how you&apos;d like to continue.
+            </p>
+
+            {error && (
+              <p className="font-serif text-sm text-red-500 text-center">{error}</p>
+            )}
+
+            {/* Google button */}
+            <button
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full flex items-center border border-[#6a4f79] border-b-4 bg-[#5bb8d4] disabled:opacity-60 transition-opacity hover:opacity-90"
+              style={{ minHeight: 52 }}
+            >
+              {/* Google icon */}
+              <span className="flex items-center justify-center bg-white border-r border-[#6a4f79]" style={{ width: 52, height: 52, flexShrink: 0 }}>
+                <svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  <path fill="none" d="M0 0h48v48H0z"/>
+                </svg>
+              </span>
+              <span className="flex-1 text-center font-display text-white text-2xl leading-none uppercase translate-y-[2px] pr-[52px]">
+                {loading ? "Loading…" : "Continue with Google"}
+              </span>
+            </button>
+
+            {/* OR divider */}
+            <div className="w-full flex items-center gap-3">
+              <div className="flex-1 h-px bg-[#6a4f79] opacity-30" />
+              <span className="font-display text-lg text-[#6a4f79] uppercase leading-none">or</span>
+              <div className="flex-1 h-px bg-[#6a4f79] opacity-30" />
+            </div>
+
+            {/* Demo button */}
+            <button
+              onClick={handleDemoMode}
+              className="w-full flex items-center justify-center gap-3 border border-[#6a4f79] border-b-4 bg-[#f7f3ec] hover:opacity-90 transition-opacity"
+              style={{ minHeight: 52 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/branding/couch.png"
+                alt=""
+                aria-hidden="true"
+                style={{ height: 24, width: "auto" }}
+              />
+              <span className="font-display text-[#6a4f79] text-2xl leading-none uppercase translate-y-[2px]">
+                Try Demo Mode
+              </span>
+            </button>
+          </div>
         </div>
+
+        {/* Privacy note */}
+        <p className="font-serif text-sm text-[#938d8d] text-center flex items-center gap-1.5">
+          <span>🔒</span>
+          <span>Your entries are private and secure.</span>
+        </p>
+
+        {/* Demo annotation */}
+        <div className="w-full flex items-start gap-2 px-2">
+          <div className="flex-1" />
+          <div className="flex flex-col items-end gap-1">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" style={{ transform: "scaleX(-1) rotate(-20deg)" }}>
+              <path d="M4 28 C8 20, 20 8, 28 4" stroke="#938d8d" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+              <path d="M28 4 L22 8 M28 4 L24 10" stroke="#938d8d" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <p className="font-serif italic text-sm text-[#938d8d] text-right max-w-[200px]">
+              Demo mode lets you explore the app without creating an account.
+            </p>
+          </div>
+        </div>
+
       </div>
     </main>
   )

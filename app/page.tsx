@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
+import { isDemoMode } from "@/lib/demo"
 import { EnergyKey } from "@/lib/types"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
 import { getCouchStory } from "@/lib/couchStories"
@@ -43,7 +44,7 @@ export default function CheckInPage() {
   useEffect(() => {
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
+      if (!session && !isDemoMode()) {
         router.replace("/login")
         return
       }

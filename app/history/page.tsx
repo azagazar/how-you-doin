@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getEntries, getUserName } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
+import { isDemoMode } from "@/lib/demo"
 import { JournalEntry } from "@/lib/types"
 import { getCouchStory } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
@@ -35,7 +36,7 @@ export default function HistoryPage() {
   useEffect(() => {
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
+      if (!session && !isDemoMode()) {
         router.replace("/login")
         return
       }

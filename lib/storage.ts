@@ -1,5 +1,6 @@
 import { JournalEntry } from "./types"
 import { supabase } from "./supabase"
+import { isDemoMode, getDemoEntries, saveDemoEntry, deleteDemoEntry } from "./demo"
 
 const NAME_KEY = "hyd_name"
 
@@ -40,6 +41,8 @@ function toEntry(row: DbRow): JournalEntry {
 // ─── CRUD ────────────────────────────────────────────────────────────────────
 
 export async function getEntries(): Promise<JournalEntry[]> {
+  if (isDemoMode()) return getDemoEntries()
+
   const { data, error } = await supabase
     .from("journal_entries")
     .select("*")
@@ -53,6 +56,8 @@ export async function getEntries(): Promise<JournalEntry[]> {
 }
 
 export async function saveEntry(entry: JournalEntry): Promise<void> {
+  if (isDemoMode()) { saveDemoEntry(entry); return }
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Not authenticated")
 
@@ -72,6 +77,8 @@ export async function saveEntry(entry: JournalEntry): Promise<void> {
 }
 
 export async function deleteEntry(id: string): Promise<void> {
+  if (isDemoMode()) { deleteDemoEntry(id); return }
+
   const { error } = await supabase
     .from("journal_entries")
     .delete()
@@ -81,6 +88,8 @@ export async function deleteEntry(id: string): Promise<void> {
 }
 
 export async function getEntryByDate(date: string): Promise<JournalEntry | undefined> {
+  if (isDemoMode()) return getDemoEntries().find((e) => e.date === date)
+
   const { data, error } = await supabase
     .from("journal_entries")
     .select("*")
