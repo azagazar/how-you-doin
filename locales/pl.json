@@ -10,10 +10,12 @@
     "demoNote": "Chcesz się rozejrzeć? Zacznij od demo."
   },
   "onboarding": {
+    "sectionTag": "Od czegoś trzeba zacząć",
+    "subtitle": "Kto dziś usiadł na Twojej kanapie?",
     "description": "Twoje miejsce na chwilę zatrzymania.\n\nUsiądź wygodnie i sprawdź, kto dziś pojawił się na kanapie.",
     "nameLabel": "Jak mamy się do Ciebie zwracać?",
     "namePlaceholder": "Np. Agata",
-    "submit": "Wchodzę ☕"
+    "submit": "Rozgość się"
   },
   "greeting": {
     "morning": "Dzień dobry",

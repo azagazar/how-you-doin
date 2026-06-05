@@ -40,13 +40,13 @@ export default function OnboardingPage() {
 
         {/* Subtitle */}
         <p className="font-serif text-xl text-black text-center">
-          Who&apos;s sitting on your couch today?
+          {t("onboarding.subtitle")}
         </p>
 
         {/* Card with section tag */}
         <div className="w-full">
           <div className="flex justify-center relative z-10 -mb-5">
-            <SectionTag label="First Things First" />
+            <SectionTag label={t("onboarding.sectionTag")} />
           </div>
           <div className="figma-card pt-7 pb-6 px-6 flex flex-col items-center gap-4">
             {/* Coffee icon */}

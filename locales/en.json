@@ -10,6 +10,8 @@
     "demoNote": "Just curious? Try the demo first."
   },
   "onboarding": {
+    "sectionTag": "First Things First",
+    "subtitle": "Who's sitting on your couch today?",
     "description": "Your daily space to pause, reflect, and check in with yourself.",
     "nameLabel": "Your name",
     "namePlaceholder": "e.g. Agata",
