@@ -122,24 +122,30 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Arrow pointing to demo note */}
-        <div className="w-full flex justify-end pr-4 -mb-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icons/arrow.png" alt="" aria-hidden="true" style={{ width: 64, height: "auto" }} />
-        </div>
-
-        {/* Demo note on brush background */}
-        <div className="relative flex items-center justify-center w-full px-2" style={{ minHeight: 56 }}>
+        {/* Arrow + demo note combined */}
+        <div className="w-full relative">
+          {/* Arrow — top right, overlapping */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/branding/demo-background.png"
+            src="/icons/arrow.png"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-fill"
+            className="absolute"
+            style={{ width: 140, height: "auto", right: 8, top: -72 }}
           />
-          <p className="relative font-serif italic text-sm text-[#6a4f79] text-center px-6">
-            Demo mode lets you explore the app without creating an account.
-          </p>
+          {/* Demo note on brush background */}
+          <div className="relative flex items-center justify-center w-full px-2" style={{ minHeight: 56 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/branding/demo-background.png"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-fill"
+            />
+            <p className="relative font-serif italic text-sm text-[#6a4f79] text-center px-6">
+              Demo mode lets you explore the app without creating an account.
+            </p>
+          </div>
         </div>
 
       </div>
