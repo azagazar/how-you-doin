@@ -122,6 +122,12 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* Arrow pointing to demo note */}
+        <div className="w-full flex justify-end pr-4 -mb-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/arrow.png" alt="" aria-hidden="true" style={{ width: 64, height: "auto" }} />
+        </div>
+
         {/* Demo note on brush background */}
         <div className="relative flex items-center justify-center w-full px-2" style={{ minHeight: 56 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
