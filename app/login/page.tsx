@@ -52,7 +52,7 @@ export default function LoginPage() {
 
         {/* Subtitle */}
         <p className="font-serif text-xl text-black text-center">
-          Your daily space to pause,<br />reflect, and check in with yourself.
+          Who&apos;s sitting on your couch today?
         </p>
 
         {/* Card */}
@@ -72,7 +72,7 @@ export default function LoginPage() {
             />
 
             <p className="font-serif text-xl text-black text-center">
-              Let&apos;s get you in.<br />Choose how you&apos;d like to continue.
+              Let&apos;s get you in.
             </p>
 
             {error && (
@@ -122,24 +122,18 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Privacy note */}
-        <p className="font-serif text-sm text-[#938d8d] text-center flex items-center gap-1.5">
-          <span>🔒</span>
-          <span>Your entries are private and secure.</span>
-        </p>
-
-        {/* Demo annotation */}
-        <div className="w-full flex items-start gap-2 px-2">
-          <div className="flex-1" />
-          <div className="flex flex-col items-end gap-1">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" style={{ transform: "scaleX(-1) rotate(-20deg)" }}>
-              <path d="M4 28 C8 20, 20 8, 28 4" stroke="#938d8d" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-              <path d="M28 4 L22 8 M28 4 L24 10" stroke="#938d8d" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <p className="font-serif italic text-sm text-[#938d8d] text-right max-w-[200px]">
-              Demo mode lets you explore the app without creating an account.
-            </p>
-          </div>
+        {/* Demo note on brush background */}
+        <div className="relative flex items-center justify-center w-full px-2" style={{ minHeight: 56 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/branding/demo-background.png"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-fill"
+          />
+          <p className="relative font-serif italic text-sm text-[#6a4f79] text-center px-6">
+            Demo mode lets you explore the app without creating an account.
+          </p>
         </div>
 
       </div>
