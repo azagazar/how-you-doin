@@ -1,4 +1,14 @@
 {
+  "login": {
+    "subtitle": "Kto dziś usiadł na Twojej kanapie?",
+    "sectionTag": "Od czegoś trzeba zacząć",
+    "description": "Zacznijmy od Ciebie.",
+    "googleButton": "Kontynuuj z Google",
+    "loading": "Ładowanie…",
+    "or": "lub",
+    "demoButton": "Wypróbuj Demo",
+    "demoNote": "Chcesz się rozejrzeć? Zacznij od demo."
+  },
   "onboarding": {
     "description": "Twoje miejsce na chwilę zatrzymania.\n\nUsiądź wygodnie i sprawdź, kto dziś pojawił się na kanapie.",
     "nameLabel": "Jak mamy się do Ciebie zwracać?",

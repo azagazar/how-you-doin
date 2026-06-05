@@ -1,4 +1,14 @@
 {
+  "login": {
+    "subtitle": "Who's sitting on your couch today?",
+    "sectionTag": "First Things First",
+    "description": "Let's get you in.",
+    "googleButton": "Continue with Google",
+    "loading": "Loading…",
+    "or": "or",
+    "demoButton": "Explore Demo",
+    "demoNote": "Just curious? Try the demo first."
+  },
   "onboarding": {
     "description": "Your daily space to pause, reflect, and check in with yourself.",
     "nameLabel": "Your name",

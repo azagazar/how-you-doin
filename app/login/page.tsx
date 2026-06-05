@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { setDemoMode } from "@/lib/demo"
 import { SectionTag } from "@/components/SectionTag"
+import { useI18n } from "@/lib/i18n"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -52,13 +54,13 @@ export default function LoginPage() {
 
         {/* Subtitle */}
         <p className="font-serif text-xl text-black text-center">
-          Who&apos;s sitting on your couch today?
+          {t("login.subtitle")}
         </p>
 
         {/* Card */}
         <div className="w-full">
           <div className="flex justify-center relative z-10 -mb-5">
-            <SectionTag label="First Things First" />
+            <SectionTag label={t("login.sectionTag")} />
           </div>
 
           <div className="figma-card pt-7 pb-6 px-6 flex flex-col items-center gap-5">
@@ -72,7 +74,7 @@ export default function LoginPage() {
             />
 
             <p className="font-serif text-xl text-black text-center">
-              Let&apos;s get you in.
+              {t("login.description")}
             </p>
 
             {error && (
@@ -98,14 +100,14 @@ export default function LoginPage() {
               </span>
               {/* Text centered in the purple flex-1 area */}
               <span className="flex-1 flex items-center justify-center font-display text-[#fde52f] text-2xl leading-none uppercase translate-y-[2px]">
-                {loading ? "Loading…" : "Continue with Google"}
+                {loading ? t("login.loading") : t("login.googleButton")}
               </span>
             </button>
 
             {/* OR divider */}
             <div className="w-full flex items-center gap-3">
               <div className="flex-1 h-px bg-[#6a4f79] opacity-30" />
-              <span className="font-display text-lg text-[#6a4f79] uppercase leading-none">or</span>
+              <span className="font-display text-lg text-[#6a4f79] uppercase leading-none">{t("login.or")}</span>
               <div className="flex-1 h-px bg-[#6a4f79] opacity-30" />
             </div>
 
@@ -116,7 +118,7 @@ export default function LoginPage() {
               style={{ minHeight: 52 }}
             >
               <span className="font-display text-[#fde52f] text-2xl leading-none uppercase translate-y-[2px]">
-                Explore Demo
+                {t("login.demoButton")}
               </span>
             </button>
           </div>
@@ -130,8 +132,8 @@ export default function LoginPage() {
             src="/icons/arrow.png"
             alt=""
             aria-hidden="true"
-            className="absolute"
-            style={{ width: 140, height: "auto", right: 8, top: -72 }}
+            className="absolute z-10"
+            style={{ width: 140, height: "auto", right: 8, top: -102 }}
           />
           {/* Demo note on brush background */}
           <div className="relative flex items-center justify-center w-full px-2" style={{ minHeight: 56 }}>
@@ -142,8 +144,8 @@ export default function LoginPage() {
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-fill"
             />
-            <p className="relative italic text-sm text-[#6a4f79] text-center" style={{ fontFamily: "var(--font-caveat)", padding: 10 }}>
-              Demo mode lets you explore the app without creating an account.
+            <p className="relative italic text-sm text-[#6a4f79] text-center" style={{ fontFamily: "var(--font-shadows)", padding: 20, fontSize: 22, color: "#000000" }}>
+              {t("login.demoNote")}
             </p>
           </div>
         </div>
