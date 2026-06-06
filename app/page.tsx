@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
@@ -18,6 +18,8 @@ import { JournalEditor } from "@/components/JournalEditor"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
 import { ChemexLoaderScreen } from "@/components/ChemexLoader"
+import { JoeyChat } from "@/components/JoeyChat"
+import { JoeyButton } from "@/components/JoeyButton"
 
 function formatDateBar(lang: string): string {
   const d = new Date()
@@ -39,6 +41,8 @@ export default function CheckInPage() {
   const [saved, setSaved] = useState(false)
   const [existingId, setExistingId] = useState<string | null>(null)
   const [appReady, setAppReady] = useState(false)
+
+  const [joeyOpen, setJoeyOpen] = useState(false)
 
   const [prompt] = useState(() => {
     const opts = ["home.journalPlaceholders.0", "home.journalPlaceholders.1", "home.journalPlaceholders.2", "home.journalPlaceholders.3"]
@@ -107,6 +111,19 @@ export default function CheckInPage() {
   }
 
   const couchStory = getCouchStory(primaryEnergy, secondaryEnergy, lang)
+
+  // Derive currentEntry reactively so Joey always sees the latest state
+  const currentEntryForJoey = useMemo(() => {
+    if (!existingId) return null
+    return {
+      id: existingId,
+      date: getTodayDate(),
+      primaryEnergy,
+      secondaryEnergy,
+      content,
+      createdAt: new Date().toISOString(),
+    }
+  }, [existingId, primaryEnergy, secondaryEnergy, content])
 
   if (!appReady) return <ChemexLoaderScreen />
   if (!userName) return null
@@ -217,7 +234,23 @@ export default function CheckInPage() {
 
       </div>
 
+      {/* Joey floating button — above BottomNav */}
+      <div className="fixed bottom-[76px] right-5 z-30 lg:bottom-6 w-fit">
+        <JoeyButton
+          label={t("joey.buttonLabel")}
+          onClick={() => setJoeyOpen(true)}
+        />
+      </div>
+
       <BottomNav />
+
+      {joeyOpen && (
+        <JoeyChat
+          currentEntry={currentEntryForJoey}
+          lang={lang}
+          onClose={() => setJoeyOpen(false)}
+        />
+      )}
     </div>
   )
 }

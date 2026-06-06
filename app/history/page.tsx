@@ -15,6 +15,8 @@ import { DesktopNav } from "@/components/DesktopNav"
 import { EntryDetail } from "@/components/EntryDetail"
 import { EnergyBadge } from "@/components/EnergyBadge"
 import { DateNavigator } from "@/components/DateNavigator"
+import { JoeyChat } from "@/components/JoeyChat"
+import { JoeyButton } from "@/components/JoeyButton"
 
 function formatDate(dateStr: string, lang: string): string {
   const d = new Date(dateStr + "T12:00:00")
@@ -35,6 +37,7 @@ export default function HistoryPage() {
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [joeyOpen, setJoeyOpen] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -87,6 +90,7 @@ export default function HistoryPage() {
   }
 
   const emptyDaySelected = selectedDate && !selectedId
+  const currentEntry = entries.find((e) => e.id === selectedId) ?? null
 
   return (
     <div className="h-dvh flex flex-col bg-[#ece7df]">
@@ -98,13 +102,19 @@ export default function HistoryPage() {
         <div className="flex-1 overflow-y-auto pb-24 lg:pb-6 lg:flex-none lg:w-80 lg:border-r lg:border-[#6a4f79]">
           <div className="px-5 pt-8 pb-6 space-y-4">
 
-            <div className="space-y-1">
+            <div className="space-y-3">
               <h1 className="font-display text-5xl text-black uppercase leading-none">
                 {t("history.title")}
               </h1>
               <p className="font-serif text-black" style={{ fontSize: 18 }}>
                 {t("history.subtitle")}
               </p>
+              <div className="hidden lg:block">
+                <JoeyButton
+                  label={t("joey.buttonLabel")}
+                  onClick={() => setJoeyOpen(true)}
+                />
+              </div>
             </div>
 
             <DateNavigator
@@ -238,7 +248,23 @@ export default function HistoryPage() {
 
       </div>
 
+      {/* Joey FAB — mobile only */}
+      <div className="fixed bottom-[76px] right-5 z-30 w-fit lg:hidden">
+        <JoeyButton
+          label={t("joey.buttonLabel")}
+          onClick={() => setJoeyOpen(true)}
+        />
+      </div>
+
       <BottomNav />
+
+      {joeyOpen && (
+        <JoeyChat
+          currentEntry={currentEntry}
+          lang={lang}
+          onClose={() => setJoeyOpen(false)}
+        />
+      )}
     </div>
   )
 }

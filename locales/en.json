@@ -65,6 +65,15 @@
     "title": "Settings",
     "language": "Language"
   },
+  "joey": {
+    "buttonLabel": "Ask Joey",
+    "chatTitle": "Joey",
+    "inputPlaceholder": "Say something…",
+    "sendButton": "Send",
+    "openingMessage": "Hey! What's going on? Tell me about your day — or ask me anything about your journal.",
+    "errorMessage": "Hmm, something went wrong. Try again?",
+    "typingLabel": "Joey is thinking…"
+  },
   "energies": {
     "monica": { "tagline": "Getting Things Done" },
     "chandler": { "tagline": "Laughing Through It" },

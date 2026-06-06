@@ -65,6 +65,15 @@
     "title": "Ustawienia",
     "language": "Język"
   },
+  "joey": {
+    "buttonLabel": "Pogadaj z Joeyem",
+    "chatTitle": "Joey",
+    "inputPlaceholder": "Napisz coś…",
+    "sendButton": "Wyślij",
+    "openingMessage": "Hej! Co tam? Powiedz mi coś o swoim dniu albo zapytaj o cokolwiek z dziennika.",
+    "errorMessage": "Hmm, coś poszło nie tak. Spróbuj jeszcze raz?",
+    "typingLabel": "Joey myśli…"
+  },
   "energies": {
     "monica": { "tagline": "Ogarniam wszystko" },
     "chandler": { "tagline": "Śmieję się mimo wszystko" },
