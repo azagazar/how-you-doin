@@ -139,7 +139,7 @@ export default function LoginPage() {
             src="/icons/arrow.png"
             alt=""
             aria-hidden="true"
-            className="absolute z-10"
+            className="absolute z-10 pointer-events-none"
             style={{ width: 140, height: "auto", right: 8, top: -102 }}
           />
           {/* Demo note on brush background */}
