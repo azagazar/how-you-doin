@@ -156,7 +156,7 @@ export function EntryDetail({ id, onDelete }: Props) {
         </div>
       ) : (
         <div
-          className="prose prose-sm max-w-none text-[#2C1A0E] border border-[#6a4f79] border-b-4 bg-[#faf8f4] px-4 py-4"
+          className="prose prose-sm max-w-none font-serif text-[#2C1A0E] border border-[#6a4f79] border-b-4 bg-[#faf8f4] px-4 py-4 [&_p]:font-serif [&_li]:font-serif"
           dangerouslySetInnerHTML={{ __html: entry.content || "<p class='font-serif text-[#b0a090] italic'>No journal entry written.</p>" }}
         />
       )}

@@ -229,6 +229,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
             onKeyDown={handleKeyDown}
             placeholder={placeholderLabel}
             disabled={isLoading}
+            autoComplete="off"
             rows={2}
             className="flex-1 resize-none bg-[#faf8f4] border border-[#6a4f79] border-b-4 px-4 py-3 font-serif text-base text-black placeholder:text-[#b0a090] outline-none disabled:opacity-50"
           />

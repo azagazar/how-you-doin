@@ -74,6 +74,7 @@ export default function OnboardingPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("onboarding.namePlaceholder")}
+                  autoComplete="given-name"
                   autoFocus
                   className="w-full px-4 py-3 bg-transparent font-serif text-lg text-black placeholder:text-[#938d8d] focus:outline-none"
                 />
