@@ -8,7 +8,7 @@ type Props = {
 }
 
 const LABEL: Record<Lang, string> = {
-  en: "Chat with Joey",
+  en: "Ask Joey",
   pl: "Pogadaj z Joeyem",
 }
 
