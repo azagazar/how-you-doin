@@ -146,7 +146,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
       <div
         role="dialog"
         aria-label="Joey chat"
-        className="joey-panel fixed z-50 bottom-0 left-0 right-0 h-[88dvh] lg:inset-y-0 lg:bottom-auto lg:left-auto lg:right-0 lg:w-[420px] lg:h-auto flex flex-col bg-[#ece7df] border-t-4 border-l border-r border-[#6a4f79] lg:border-4 lg:border-[#6a4f79]"
+        className="joey-panel fixed z-50 bottom-0 left-0 right-0 h-[88dvh] lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[420px] flex flex-col bg-[#ece7df] border-t-4 border-l border-r border-[#6a4f79] lg:border-4 lg:border-[#6a4f79]"
       >
         {/* Header */}
         <div className="flex items-center justify-between bg-[#fde52f] border-b-4 border-[#6a4f79] px-5 py-3 flex-shrink-0">
@@ -166,7 +166,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4">
           {messages.map((msg) => (
             <div
               key={msg.id}
