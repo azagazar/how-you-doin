@@ -9,7 +9,7 @@ A cozy journaling and emotional reflection app inspired by the comfort of daily 
 ## What it does
 
 1. **Daily Check-In** — Select one or two energies (Monica, Chandler, Ross, Joey, Phoebe, Rachel) that best describe your day. Place them on the couch. Write a note. Save.
-2. **Journal History** — Browse past entries. Tap any card to read the full entry.
+2. **Journal History** — Browse past entries via a horizontal date timeline. Tap a date chip to jump directly to that day's entry, or scroll the entry list below.
 3. **Entry Detail** — Full text, selected energies, the generated day story, edit or delete.
 4. **Settings** — Switch language (EN / PL).
 
@@ -110,6 +110,14 @@ The loader appears for a minimum of **2 seconds** even if data loads instantly, 
 ### EnergyBadge
 `components/EnergyBadge.tsx` — compact label shown in history cards and entry detail. Blue background (`#6fb6d4`), yellow text (`#fde52f`), no border.
 
+### DateNavigator
+`components/DateNavigator.tsx` — horizontal date timeline on the Journal screen.
+
+- Displays every day of the current month as a scrollable chip strip.
+- **Four visual states:** selected (yellow `#fde52f`), has entry (warm white card + purple border), no entry (grey ghost), today (blue dot `#6fb6d4` regardless of selection).
+- Auto-scrolls the selected or today chip into view on mount.
+- Includes an empty icon slot per chip reserved for future energy icons.
+
 ### JournalEditor
 `components/JournalEditor.tsx` — TipTap rich text editor with placeholder text.
 
@@ -201,6 +209,7 @@ how-you-doin/
 │   ├── CouchSelector.tsx     # Couch SVG interaction
 │   ├── EnergyCard.tsx        # Selectable energy cards
 │   ├── EnergyBadge.tsx       # Compact energy label
+│   ├── DateNavigator.tsx     # Horizontal date timeline (Journal screen)
 │   ├── JournalEditor.tsx     # TipTap editor
 │   ├── CouchStoryBlock.tsx   # Generated day story
 │   ├── EntryDetail.tsx       # Full entry view

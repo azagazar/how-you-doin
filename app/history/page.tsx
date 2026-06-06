@@ -14,6 +14,7 @@ import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
 import { EntryDetail } from "@/components/EntryDetail"
 import { EnergyBadge } from "@/components/EnergyBadge"
+import { DateNavigator } from "@/components/DateNavigator"
 
 function formatDate(dateStr: string, lang: string): string {
   const d = new Date(dateStr + "T12:00:00")
@@ -72,7 +73,7 @@ export default function HistoryPage() {
 
         {/* Left panel — entry list */}
         <div className="flex-1 overflow-y-auto pb-24 lg:pb-6 lg:flex-none lg:w-80 lg:border-r lg:border-[#6a4f79]">
-          <div className="px-5 pt-8 pb-6 space-y-6">
+          <div className="px-5 pt-8 pb-6 space-y-4">
 
             <div className="space-y-1">
               <h1 className="font-display text-5xl text-black uppercase leading-none">
@@ -82,6 +83,15 @@ export default function HistoryPage() {
                 {t("history.subtitle")}
               </p>
             </div>
+
+            {entries.length > 0 && (
+              <DateNavigator
+                entries={entries}
+                selectedId={selectedId}
+                lang={lang}
+                onSelect={handleEntryClick}
+              />
+            )}
 
             {entries.length === 0 ? (
               <div className="text-center py-12 space-y-5">
