@@ -44,7 +44,8 @@
     "emptyTitle": "Na kanapie jeszcze nikt nie siedział.",
     "emptySubtitle": "Zacznij od pierwszego wpisu.",
     "noNote": "Brak notatki.",
-    "couchWaiting": "Kanapa czeka."
+    "couchWaiting": "Kanapa czeka.",
+    "emptyDay": "Tego dnia kanapa była pusta."
   },
   "entryDetail": {
     "title": "Jak minął ten dzień?",

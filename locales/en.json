@@ -44,7 +44,8 @@
     "emptyTitle": "The couch is empty.",
     "emptySubtitle": "Start with today's check-in.",
     "noNote": "No note added.",
-    "couchWaiting": "The couch is waiting."
+    "couchWaiting": "The couch is waiting.",
+    "emptyDay": "Nobody took a seat on the couch that day."
   },
   "entryDetail": {
     "title": "How You Were Doin'",

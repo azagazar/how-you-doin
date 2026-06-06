@@ -34,6 +34,7 @@ export default function HistoryPage() {
   const { lang, t } = useI18n()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
   useEffect(() => {
     async function init() {
@@ -50,20 +51,42 @@ export default function HistoryPage() {
       setEntries(loaded)
       const entryParam = new URLSearchParams(window.location.search).get("entry")
       if (entryParam && loaded.some(e => e.id === entryParam)) {
+        const entry = loaded.find(e => e.id === entryParam)!
         setSelectedId(entryParam)
+        setSelectedDate(entry.date)
       } else if (loaded.length > 0 && window.innerWidth >= 1024) {
         setSelectedId(loaded[0].id)
+        setSelectedDate(loaded[0].date)
       }
     }
     init()
   }, [router])
 
+  function handleDayClick(dateStr: string) {
+    setSelectedDate(dateStr)
+    const entry = entries.find(e => e.date === dateStr)
+    if (entry) {
+      setSelectedId(entry.id)
+      if (window.innerWidth < 1024) {
+        router.push(`/entry/${entry.id}`)
+      }
+    } else {
+      setSelectedId(null)
+      // mobile: empty-day card shown inline — no navigation
+    }
+  }
+
+  // entry card click (from list) still works
   function handleEntryClick(id: string) {
+    const entry = entries.find(e => e.id === id)
     setSelectedId(id)
+    setSelectedDate(entry?.date ?? null)
     if (window.innerWidth < 1024) {
       router.push(`/entry/${id}`)
     }
   }
+
+  const emptyDaySelected = selectedDate && !selectedId
 
   return (
     <div className="h-dvh flex flex-col bg-[#ece7df]">
@@ -71,7 +94,7 @@ export default function HistoryPage() {
 
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
 
-        {/* Left panel — entry list */}
+        {/* Left panel — date navigator + entry list */}
         <div className="flex-1 overflow-y-auto pb-24 lg:pb-6 lg:flex-none lg:w-80 lg:border-r lg:border-[#6a4f79]">
           <div className="px-5 pt-8 pb-6 space-y-4">
 
@@ -84,16 +107,14 @@ export default function HistoryPage() {
               </p>
             </div>
 
-            {entries.length > 0 && (
-              <DateNavigator
-                entries={entries}
-                selectedId={selectedId}
-                lang={lang}
-                onSelect={handleEntryClick}
-              />
-            )}
+            <DateNavigator
+              entries={entries}
+              selectedDate={selectedDate}
+              lang={lang}
+              onSelectDay={handleDayClick}
+            />
 
-            {entries.length === 0 ? (
+            {entries.length === 0 && !emptyDaySelected ? (
               <div className="text-center py-12 space-y-5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -111,6 +132,17 @@ export default function HistoryPage() {
               </div>
             ) : (
               <div className="space-y-5">
+
+                {/* Empty-day card — shown on mobile when a past day with no entry is selected */}
+                {emptyDaySelected && (
+                  <div className="figma-card p-5 space-y-3 animate-settle lg:hidden">
+                    <p className="font-display text-xl text-black uppercase leading-none">
+                      {formatDate(selectedDate, lang)}
+                    </p>
+                    <p className="font-serif text-base text-[#938d8d]">{t("history.emptyDay")}</p>
+                  </div>
+                )}
+
                 {entries.map((entry) => {
                   const preview = stripHtml(entry.content)
                   const story = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy, lang)
@@ -167,8 +199,26 @@ export default function HistoryPage() {
               onDelete={async () => {
                 setEntries(await getEntries())
                 setSelectedId(null)
+                setSelectedDate(null)
               }}
             />
+          ) : emptyDaySelected ? (
+            <div className="flex flex-col items-center justify-center flex-1 gap-5 text-center px-8">
+              <p className="font-display text-2xl text-black uppercase opacity-60">
+                {formatDate(selectedDate, lang)}
+              </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/branding/couch.png"
+                alt=""
+                aria-hidden="true"
+                style={{ width: 140, opacity: 0.3 }}
+                draggable={false}
+              />
+              <p className="font-display text-3xl text-black uppercase opacity-40">
+                {t("history.couchWaiting")}
+              </p>
+            </div>
           ) : (
             <div className="flex flex-col items-center justify-center flex-1 gap-4 text-center px-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}

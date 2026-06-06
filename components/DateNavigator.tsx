@@ -5,9 +5,9 @@ import { JournalEntry } from "@/lib/types"
 
 interface Props {
   entries: JournalEntry[]
-  selectedId: string | null
+  selectedDate: string | null
   lang: string
-  onSelect: (id: string) => void
+  onSelectDay: (dateStr: string) => void
 }
 
 function getDaysInCurrentMonth(): string[] {
@@ -29,7 +29,7 @@ function getMonthLabel(lang: string): string {
     .toUpperCase()
 }
 
-export function DateNavigator({ entries, selectedId, lang, onSelect }: Props) {
+export function DateNavigator({ entries, selectedDate, lang, onSelectDay }: Props) {
   const chipRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
   const entryByDate = new Map(entries.map((e) => [e.date, e]))
@@ -37,13 +37,12 @@ export function DateNavigator({ entries, selectedId, lang, onSelect }: Props) {
   const today = new Date().toISOString().split("T")[0]
 
   useEffect(() => {
-    if (!selectedId) return
-    const el = chipRefs.current.get(selectedId)
-    if (el) el.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" })
-  }, [selectedId])
+    if (!selectedDate) return
+    chipRefs.current.get(selectedDate)?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" })
+  }, [selectedDate])
 
   useEffect(() => {
-    if (selectedId) return
+    if (selectedDate) return
     chipRefs.current.get(today)?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" })
   }, [])
 
@@ -59,12 +58,9 @@ export function DateNavigator({ entries, selectedId, lang, onSelect }: Props) {
         style={{ scrollbarWidth: "none" }}
       >
         {days.map((dateStr) => {
-          const entry = entryByDate.get(dateStr)
-          const isSelected = !!entry && entry.id === selectedId
-          const hasEntry = !!entry
+          const isSelected = dateStr === selectedDate
           const isToday = dateStr === today
           const isFuture = dateStr > today
-          const isDisabled = !hasEntry
 
           const d = new Date(dateStr + "T12:00:00")
           const day = d.toLocaleDateString(lang === "pl" ? "pl-PL" : "en-GB", { day: "numeric" })
@@ -72,47 +68,42 @@ export function DateNavigator({ entries, selectedId, lang, onSelect }: Props) {
           const ariaLabel = d.toLocaleDateString(lang === "pl" ? "pl-PL" : "en-GB", {
             day: "numeric",
             month: "long",
-          }) + (isToday ? " (today)" : "")
+          }) + (isToday ? " (today)" : "") + (!entryByDate.get(dateStr) && !isFuture ? " — no entry" : "")
 
-          // ── visual state resolution ──────────────────────────────
+          // visual state
           let bg: string
           let borderColor: string
           let borderBottomWidth: number
           let textColor: string
-          let chipOpacity: number
 
           if (isSelected) {
-            // State 1 — selected
             bg = "#fde52f"
             borderColor = "#6a4f79"
             borderBottomWidth = 4
             textColor = "#6a4f79"
-            chipOpacity = 1
-          } else if (hasEntry) {
-            // State 2 — has entry, not selected
+          } else if (!isFuture) {
+            // all past days + today look the same — white fill, purple border
             bg = "#f7f3ec"
             borderColor = "#6a4f79"
             borderBottomWidth = 4
             textColor = "#2c1a0e"
-            chipOpacity = 1
           } else {
-            // State 3 — no entry (past or future)
+            // future — greyed out, non-interactive
             bg = "#f0ede8"
             borderColor = "#d9d3cc"
             borderBottomWidth = 1
             textColor = "rgba(106, 79, 121, 0.35)"
-            chipOpacity = isFuture ? 0.5 : 1
           }
 
           return (
             <button
               key={dateStr}
               ref={(el) => {
-                if (el) chipRefs.current.set(entry?.id ?? dateStr, el)
-                else chipRefs.current.delete(entry?.id ?? dateStr)
+                if (el) chipRefs.current.set(dateStr, el)
+                else chipRefs.current.delete(dateStr)
               }}
-              onClick={() => entry && onSelect(entry.id)}
-              disabled={isDisabled}
+              onClick={() => !isFuture && onSelectDay(dateStr)}
+              disabled={isFuture}
               aria-pressed={isSelected}
               aria-label={ariaLabel}
               className="flex-none flex flex-col items-center justify-center font-display uppercase transition-opacity px-3"
@@ -123,15 +114,14 @@ export function DateNavigator({ entries, selectedId, lang, onSelect }: Props) {
                 borderBottomWidth,
                 minWidth: 48,
                 height: 60,
-                opacity: chipOpacity,
-                cursor: isDisabled ? "default" : "pointer",
+                cursor: isFuture ? "default" : "pointer",
                 gap: 2,
               }}
             >
               {/* icon slot — reserved for future energy icon */}
               <span className="leading-none" style={{ fontSize: 20 }}>{day}</span>
               <span className="leading-none" style={{ fontSize: 10 }}>{month}</span>
-              {/* State 4 — today dot (Monica blue, always visible) */}
+              {/* today dot — Monica blue */}
               <span
                 style={{
                   width: 5,
