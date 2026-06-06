@@ -74,6 +74,15 @@
     "errorMessage": "Hmm, coś poszło nie tak. Spróbuj jeszcze raz?",
     "typingLabel": "Joey myśli…"
   },
+  "voice": {
+    "listening": "Słucham...",
+    "stop": "Zatrzymaj nagrywanie",
+    "start": "Włącz dyktowanie",
+    "notSupported": "Wprowadzanie głosowe nie jest jeszcze obsługiwane w tej przeglądarce.",
+    "errorPermission": "Odmówiono dostępu do mikrofonu.",
+    "errorNoSpeech": "Nie wykryto mowy. Spróbuj ponownie.",
+    "errorGeneric": "Coś poszło nie tak. Spróbuj ponownie."
+  },
   "energies": {
     "monica": { "tagline": "Ogarniam wszystko" },
     "chandler": { "tagline": "Śmieję się mimo wszystko" },

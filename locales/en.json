@@ -74,6 +74,15 @@
     "errorMessage": "Hmm, something went wrong. Try again?",
     "typingLabel": "Joey is thinking…"
   },
+  "voice": {
+    "listening": "Listening...",
+    "stop": "Stop recording",
+    "start": "Start voice input",
+    "notSupported": "Voice input is not supported in this browser yet.",
+    "errorPermission": "Microphone access was denied.",
+    "errorNoSpeech": "No speech detected. Try again.",
+    "errorGeneric": "Something went wrong. Try again."
+  },
   "energies": {
     "monica": { "tagline": "Getting Things Done" },
     "chandler": { "tagline": "Laughing Through It" },
