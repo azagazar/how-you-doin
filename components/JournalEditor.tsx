@@ -115,7 +115,18 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
     }
 
     recognitionRef.current = recognition
-    recognition.start()
+    try {
+      recognition.start()
+    } catch {
+      setErrorMsg(t("voice.errorGeneric"))
+      updateVoiceState("error")
+      setTimeout(() => {
+        if (voiceStateRef.current === "error") {
+          updateVoiceState("idle")
+          setErrorMsg("")
+        }
+      }, 3500)
+    }
   }, [lang, editor, t, updateVoiceState])
 
   useEffect(() => {
