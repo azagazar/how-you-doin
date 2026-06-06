@@ -23,7 +23,7 @@ export function JoeyInvite({ onClick, lang }: Props) {
       aria-label={LABEL[lang]}
       className="
         fixed bottom-[76px] left-0 right-0 z-20
-        lg:hidden
+        lg:bottom-0
         flex items-center justify-center gap-2
         bg-[#ece7df] border-t border-[#6a4f79]/40
         py-2.5 px-4

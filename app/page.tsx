@@ -211,37 +211,24 @@ export default function CheckInPage() {
           </div>
         </div>
 
-        {/* Quote bar — Joey's quote + desktop chat entry */}
-        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 mt-2 pb-6">
-          <div className="border-4 border-[#6a4f79] bg-[#fde52f]">
-            <div className="flex items-start gap-4 px-6 py-5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/icons/quotes.png"
-                alt=""
-                aria-hidden="true"
-                className="w-10 h-10 object-contain flex-shrink-0"
-              />
-              <div className="flex-1">
-                <p className="font-serif text-base text-black leading-snug">
-                  It&apos;s like a cow&apos;s opinion. It doesn&apos;t matter. It&apos;s moo.
-                </p>
-                <p className="font-serif italic text-base text-black mt-1 text-right">
-                  — Joey Tribbiani
-                </p>
-              </div>
+        {/* Quote bar */}
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 mt-2 pb-14 lg:pb-16">
+          <div className="border-4 border-[#6a4f79] bg-[#fde52f] flex items-start gap-4 px-6 py-5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/icons/quotes.png"
+              alt=""
+              aria-hidden="true"
+              className="w-10 h-10 object-contain flex-shrink-0"
+            />
+            <div className="flex-1">
+              <p className="font-serif text-base text-black leading-snug">
+                It&apos;s like a cow&apos;s opinion. It doesn&apos;t matter. It&apos;s moo.
+              </p>
+              <p className="font-serif italic text-base text-black mt-1 text-right">
+                — Joey Tribbiani
+              </p>
             </div>
-            {/* Desktop Joey entry — part of the quote bar, not floating */}
-            <button
-              onClick={() => setJoeyOpen(true)}
-              className="hidden lg:flex w-full items-center justify-center gap-2 border-t-2 border-[#6a4f79] px-6 py-3 hover:bg-[#fbd916] transition-colors"
-            >
-              <span className="text-base leading-none" aria-hidden="true">🍕</span>
-              <span className="font-display text-[#6a4f79] text-base uppercase leading-none tracking-wide">
-                {t("joey.buttonLabel")}
-              </span>
-              <span className="font-serif text-[#6a4f79]/70 text-sm">→</span>
-            </button>
           </div>
         </div>
 
