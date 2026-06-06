@@ -1,0 +1,36 @@
+/* Drop falls from collar exit. Loops while loading, removed when done. */
+@keyframes dripFall {
+  0%   { opacity: 0;    transform: translateY(0px); }
+  6%   { opacity: 0.88; transform: translateY(0px); }
+  72%  { opacity: 0.79; transform: translateY(7px);  }
+  88%  { opacity: 0;    transform: translateY(8px);  }
+  100% { opacity: 0;    transform: translateY(8px);  }
+}
+
+@keyframes textBreathe {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1;   }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+/* Coffee fill is JS-controlled via inline style (CSS transition, no keyframe). */
+
+.drip {
+  animation: dripFall 1.9s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center top;
+}
+
+.label {
+  color: #4a2e22;
+  font-size: 16px;
+  font-family: var(--font-shadows-two), 'Shadows Into Light Two', cursive;
+  letter-spacing: 0.04em;
+  animation: textBreathe 3s ease-in-out infinite;
+}

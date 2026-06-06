@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Geist, League_Gothic, Cormorant_Infant, Special_Elite, Caveat, Shadows_Into_Light } from "next/font/google"
+import { Geist, League_Gothic, Cormorant_Infant, Special_Elite, Caveat, Shadows_Into_Light, Shadows_Into_Light_Two } from "next/font/google"
 import { I18nProvider } from "@/lib/i18n"
 import { SwRegister } from "./sw-register"
 import "./globals.css"
@@ -30,6 +30,12 @@ const shadowsIntoLight = Shadows_Into_Light({
   weight: "400",
 })
 
+const shadowsIntoLightTwo = Shadows_Into_Light_Two({
+  variable: "--font-shadows-two",
+  subsets: ["latin"],
+  weight: "400",
+})
+
 export const metadata: Metadata = {
   title: "How You Doin'?",
   description: "Your daily emotional check-in",
@@ -47,7 +53,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${leagueGothic.variable} ${cormorantInfant.variable} ${specialElite.variable} ${caveat.variable} ${shadowsIntoLight.variable} h-full`}>
+    <html lang="en" className={`${geist.variable} ${leagueGothic.variable} ${cormorantInfant.variable} ${specialElite.variable} ${caveat.variable} ${shadowsIntoLight.variable} ${shadowsIntoLightTwo.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
         <I18nProvider>{children}</I18nProvider>
         <SwRegister />

@@ -17,6 +17,7 @@ import { CouchStoryBlock } from "@/components/CouchStoryBlock"
 import { JournalEditor } from "@/components/JournalEditor"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
+import { ChemexLoaderScreen } from "@/components/ChemexLoader"
 
 function formatDateBar(lang: string): string {
   const d = new Date()
@@ -37,6 +38,7 @@ export default function CheckInPage() {
   const [content, setContent] = useState("")
   const [saved, setSaved] = useState(false)
   const [existingId, setExistingId] = useState<string | null>(null)
+  const [appReady, setAppReady] = useState(false)
 
   const [prompt] = useState(() => {
     const opts = ["home.journalPlaceholders.0", "home.journalPlaceholders.1", "home.journalPlaceholders.2", "home.journalPlaceholders.3"]
@@ -44,16 +46,19 @@ export default function CheckInPage() {
   })
 
   useEffect(() => {
+    const minDelay = new Promise<void>(r => setTimeout(r, 2000))
+    let redirect: string | null = null
+
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session && !isDemoMode()) {
-        router.replace("/login")
+        redirect = "/login"
         return
       }
 
       const name = getUserName()
       if (!name) {
-        router.replace("/onboarding")
+        redirect = "/onboarding"
         return
       }
       setUserName(name)
@@ -67,7 +72,11 @@ export default function CheckInPage() {
         setExistingId(existing.id)
       }
     }
-    init()
+
+    Promise.all([init(), minDelay]).then(() => {
+      if (redirect) router.replace(redirect)
+      else setAppReady(true)
+    })
   }, [router])
 
   const handleEnergySelect = useCallback((key: EnergyKey) => {
@@ -90,19 +99,16 @@ export default function CheckInPage() {
 
   async function handleSave() {
     const today = getTodayDate()
-    await saveEntry({
-      id: existingId ?? (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36)),
-      date: today,
-      primaryEnergy,
-      secondaryEnergy,
-      content,
-      createdAt: new Date().toISOString(),
-    })
+    const id = existingId ?? (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36))
+    await saveEntry({ id, date: today, primaryEnergy, secondaryEnergy, content, createdAt: new Date().toISOString() })
+    setExistingId(id)
     setSaved(true)
+    setTimeout(() => router.push(`/history?entry=${id}`), 1400)
   }
 
   const couchStory = getCouchStory(primaryEnergy, secondaryEnergy, lang)
 
+  if (!appReady) return <ChemexLoaderScreen />
   if (!userName) return null
 
   const greetingKey = getGreetingKey()

@@ -13,7 +13,6 @@ import { useI18n } from "@/lib/i18n"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
 import { EntryDetail } from "@/components/EntryDetail"
-import { MiniCouch } from "@/components/MiniCouch"
 import { EnergyBadge } from "@/components/EnergyBadge"
 
 function formatDate(dateStr: string, lang: string): string {
@@ -48,7 +47,10 @@ export default function HistoryPage() {
       }
       const loaded = await getEntries()
       setEntries(loaded)
-      if (loaded.length > 0 && window.innerWidth >= 1024) {
+      const entryParam = new URLSearchParams(window.location.search).get("entry")
+      if (entryParam && loaded.some(e => e.id === entryParam)) {
+        setSelectedId(entryParam)
+      } else if (loaded.length > 0 && window.innerWidth >= 1024) {
         setSelectedId(loaded[0].id)
       }
     }
@@ -76,7 +78,7 @@ export default function HistoryPage() {
               <h1 className="font-display text-5xl text-black uppercase leading-none">
                 {t("history.title")}
               </h1>
-              <p className="font-serif text-2xl text-black">
+              <p className="font-serif text-black" style={{ fontSize: 18 }}>
                 {t("history.subtitle")}
               </p>
             </div>
@@ -115,14 +117,6 @@ export default function HistoryPage() {
                         <p className="font-display text-xl text-black uppercase leading-none">
                           {formatDate(entry.date, lang)}
                         </p>
-
-                        <div className="flex justify-center">
-                          <MiniCouch
-                            primary={entry.primaryEnergy}
-                            secondary={entry.secondaryEnergy}
-                            width={200}
-                          />
-                        </div>
 
                         {(entry.primaryEnergy || entry.secondaryEnergy) && (
                           <div className="flex gap-2 flex-wrap">

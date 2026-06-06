@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase"
 import { setDemoMode } from "@/lib/demo"
 import { SectionTag } from "@/components/SectionTag"
 import { useI18n } from "@/lib/i18n"
+import { ChemexLoaderScreen } from "@/components/ChemexLoader"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -30,10 +31,14 @@ export default function LoginPage() {
     }
   }
 
-  function handleDemoMode() {
+  async function handleDemoMode() {
+    setLoading(true)
     setDemoMode(true)
+    await new Promise(r => setTimeout(r, 2000))
     router.push("/onboarding")
   }
+
+  if (loading) return <ChemexLoaderScreen />
 
   return (
     <main className="min-h-dvh flex flex-col items-center justify-center px-5 py-10 bg-[#ece7df]">

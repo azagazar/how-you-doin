@@ -11,11 +11,11 @@ export function EnergyBadge({ energy, size = "sm" }: Props) {
   return (
     <span
       className="figma-tag"
-      style={{ height: size === "sm" ? 32 : 40, padding: "0 10px" }}
+      style={{ height: size === "sm" ? 32 : 40, padding: "0 10px", backgroundColor: "#6FB6D4", border: "none" }}
     >
       <span
-        className="font-display text-[#6a4f79] leading-none uppercase whitespace-nowrap"
-        style={{ fontSize: size === "sm" ? 18 : 22 }}
+        className="font-display leading-none uppercase whitespace-nowrap"
+        style={{ fontSize: size === "sm" ? 18 : 22, color: "#FDE52F" }}
       >
         {config.name}
       </span>
