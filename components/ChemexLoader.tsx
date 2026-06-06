@@ -28,9 +28,8 @@ export function ChemexLoader({
   size = 210,
   className,
 }: ChemexLoaderProps) {
-  const fillRef     = useRef<SVGRectElement>(null);
-  const dripClipRef = useRef<SVGRectElement>(null);
-  const rafRef      = useRef<number>(0);
+  const fillRef = useRef<SVGRectElement>(null);
+  const rafRef  = useRef<number>(0);
   const [isDone, setIsDone] = useState(false);
 
   /**
@@ -44,10 +43,7 @@ export function ChemexLoader({
     const fillTop  = CARAFE_BOTTOM - level;
     fillRef.current.setAttribute("y",      String(fillTop));
     fillRef.current.setAttribute("height", String(level + 0.05));
-    if (dripClipRef.current) {
-      dripClipRef.current.setAttribute("height", String(fillTop + 2));
-    }
-    if (clamped >= 100) setIsDone(true);
+if (clamped >= 100) setIsDone(true);
   }, []);
 
   /* ── Controlled mode: mirror external progress ── */
@@ -114,10 +110,6 @@ export function ChemexLoader({
           <defs>
             <clipPath id="chemex-carafe-clip">
               <path d="M21.5,16.9 C24.2,20.1 26.1,24.2 27.3,28.7 C28,31.3 26.1,33.8 23.5,33.8 L6.3,33.8 C3.6,33.8 1.7,31.3 2.4,28.7 C3.6,24.6 5.5,20.5 8.4,16.9 Z" />
-            </clipPath>
-            {/* Shrinks as coffee rises so the drip merges into the fill */}
-            <clipPath id="chemex-drip-clip">
-              <rect ref={dripClipRef} x="-2" y="-2" width="34" height="37.8" />
             </clipPath>
           </defs>
 
@@ -187,26 +179,6 @@ export function ChemexLoader({
            * Formula applied: x_new = (x_orig − 15)×0.7 + 15, y_new = (y_orig − 17)×0.7 + 17
            * Tip stays at (15, 17). Solid fill (no inner cutout). Hidden when done.
            */}
-          {!isDone && (
-            <path
-              className={styles.drip}
-              clipPath="url(#chemex-drip-clip)"
-              fill="#4A2E22"
-              opacity="0.88"
-              stroke="none"
-              d="M14.503,17.786
-                 C14.049,18.676 13.620,19.516 13.621,19.920
-                 C13.622,20.618 13.963,21.069 14.635,21.260
-                 C14.733,21.288 14.855,21.304 14.982,21.304
-                 C15.216,21.304 15.487,21.248 15.706,21.103
-                 C15.972,20.928 16.139,20.645 16.187,20.184
-                 C16.279,19.581 16.023,19.099 15.727,18.439
-                 C15.520,18.049 15.286,17.607 15.120,17.103
-                 C15.104,17.046 15.056,17.006 15.000,17.001
-                 C14.940,16.996 14.885,17.026 14.859,17.078
-                 C14.752,17.299 14.631,17.536 14.503,17.786Z"
-            />
-          )}
         </svg>
 
         <p className={styles.label}>{label}</p>

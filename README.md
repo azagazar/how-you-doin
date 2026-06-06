@@ -87,7 +87,6 @@ Inspired by Monica's apartment — warm, nostalgic, never clinical.
 A custom SVG animated loading screen shaped like a Chemex coffee maker.
 
 - **Coffee fill** — rises from 0% to ~90% over ~3.5s (simulated), then to 100% when `complete={true}`.
-- **Drip** — a falling drop that loops while loading. A clip path hides the portion that enters the rising coffee, so it merges seamlessly. CSS keyframe peaks at `opacity: 0.88` to match the fill's SVG opacity — avoids the drop appearing darker.
 - **Text** — *"Brewing your day…"* with a breathing opacity animation.
 
 ```tsx
