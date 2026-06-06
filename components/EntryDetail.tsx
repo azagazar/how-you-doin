@@ -122,7 +122,7 @@ export function EntryDetail({ id, onDelete }: Props) {
               {secondaryEnergy && <EnergyBadge energy={secondaryEnergy} size="md" />}
             </div>
           )}
-          <p className="text-sm font-semibold text-[#2C1A0E]">{editStory.dayTitle}</p>
+          <p className="font-display text-2xl text-black uppercase">{editStory.dayTitle}</p>
           <div className="grid grid-cols-3 gap-2">
             {ENERGY_ORDER.map((key) => (
               <EnergyCard

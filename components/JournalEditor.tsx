@@ -34,7 +34,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: placeholder ?? "Co warto zapamiętać z dzisiejszego dnia?" }),
+      Placeholder.configure({ placeholder: placeholder ?? t("home.journalPlaceholders.0") }),
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
