@@ -17,6 +17,7 @@ import { EnergyBadge } from "@/components/EnergyBadge"
 import { DateNavigator } from "@/components/DateNavigator"
 import { JoeyChat } from "@/components/JoeyChat"
 import { JoeyButton } from "@/components/JoeyButton"
+import { JoeyInvite } from "@/components/JoeyInvite"
 
 function formatDate(dateStr: string, lang: string): string {
   const d = new Date(dateStr + "T12:00:00")
@@ -248,13 +249,8 @@ export default function HistoryPage() {
 
       </div>
 
-      {/* Joey FAB — mobile only */}
-      <div className="fixed bottom-[76px] right-5 z-30 w-fit lg:hidden">
-        <JoeyButton
-          label={t("joey.buttonLabel")}
-          onClick={() => setJoeyOpen(true)}
-        />
-      </div>
+      {/* Mobile Joey strip — above bottom nav */}
+      <JoeyInvite onClick={() => setJoeyOpen(true)} lang={lang} />
 
       <BottomNav />
 
