@@ -235,11 +235,12 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="figma-btn flex-shrink-0"
+            aria-label={sendLabel}
+            className="flex-shrink-0 w-11 h-11 rounded-full bg-[#6a4f79] border-b-4 border-[#3d2b4a] flex items-center justify-center transition-opacity disabled:opacity-40 hover:opacity-90"
           >
-            <span className="font-display text-[#fde52f] text-lg leading-none uppercase translate-y-[2px]">
-              {sendLabel}
-            </span>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path d="M2 9h14M10 3l6 6-6 6" stroke="#fde52f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
         </form>
       </div>
