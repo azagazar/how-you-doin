@@ -9,7 +9,8 @@ export const runtime = "nodejs"
 // which overrides the SDK default. We pin the correct URL here to avoid 404s.
 const anthropic = createAnthropic({
   baseURL: "https://api.anthropic.com/v1",
-  apiKey: process.env.JOEY_ANTHROPIC_API_KEY,
+  // JOEY_ANTHROPIC_API_KEY used locally to avoid Claude Desktop overriding ANTHROPIC_API_KEY with empty string
+  apiKey: process.env.JOEY_ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY,
 })
 
 export async function POST(req: Request) {
