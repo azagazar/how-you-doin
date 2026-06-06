@@ -239,7 +239,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
             className="flex-shrink-0 w-11 h-11 rounded-full bg-[#6a4f79] border-b-4 border-[#3d2b4a] flex items-center justify-center transition-opacity disabled:opacity-40 hover:opacity-90"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-              <path d="M2 9h14M10 3l6 6-6 6" stroke="#fde52f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M9 16V2M3 8l6-6 6 6" stroke="#fde52f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
         </form>
