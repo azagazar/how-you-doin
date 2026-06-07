@@ -9,9 +9,11 @@ A cozy journaling and emotional reflection app inspired by the comfort of daily 
 ## What it does
 
 1. **Daily Check-In** — Select one or two energies (Monica, Chandler, Ross, Joey, Phoebe, Rachel) that best describe your day. Place them on the couch. Write a note. Save.
-2. **Journal History** — Browse past entries via a horizontal date timeline. Tap a date chip to jump directly to that day's entry, or scroll the entry list below.
-3. **Entry Detail** — Full text, selected energies, the generated day story, edit or delete.
-4. **Settings** — Switch language (EN / PL).
+2. **Voice Input** — Tap the microphone button in the journal editor to dictate your note. Uses the browser's built-in Web Speech API (no paid service). Automatically switches between `pl-PL` and `en-US` based on the app language. Appends transcript to existing text without overwriting.
+3. **Joey — AI Couch Friend** — Chat with Joey (Claude-powered) about your day or journal history. Opens as a side panel on desktop, full-screen sheet on mobile.
+4. **Journal History** — Browse past entries via a horizontal date timeline. Tap a date chip to jump directly to that day's entry, or scroll the entry list below.
+5. **Entry Detail** — Full text, selected energies, the generated day story, edit or delete.
+6. **Settings** — Switch language (EN / PL).
 
 After saving an entry the app redirects to History with the new entry pre-selected.
 
@@ -119,7 +121,20 @@ The loader appears for a minimum of **2 seconds** even if data loads instantly, 
 - Includes an empty icon slot per chip reserved for future energy icons.
 
 ### JournalEditor
-`components/JournalEditor.tsx` — TipTap rich text editor with placeholder text.
+`components/JournalEditor.tsx` — TipTap rich text editor with placeholder text and built-in voice input.
+
+- **Microphone button** — appears in the toolbar below the text area when the browser supports `SpeechRecognition` / `webkitSpeechRecognition`.
+- **Language-aware** — uses `pl-PL` when the app is in Polish, `en-US` in English.
+- **Non-destructive** — transcript is appended to existing text, never replaces it.
+- **Error handling** — permission denied, no speech detected, and generic errors each show a distinct localised message.
+- **Fallback** — if the API is unavailable (Firefox, Chrome on iOS) a small notice replaces the button.
+
+### JoeyChat & JoeyInvite
+`components/JoeyChat.tsx` — Streaming chat panel backed by `claude-sonnet-4-6`. Maintains conversation history for the session (ephemeral, not persisted). Automatically fetches recent journal entries when the question needs historical context.
+
+`components/JoeyInvite.tsx` — Entry point for Joey:
+- **Mobile** — full-width strip pinned above the bottom nav, blue (`#6fb6d4`), yellow text.
+- **Desktop** — FAB (floating action button) fixed to the bottom-right corner, same colour scheme, styled with `.figma-btn` to match the design system.
 
 ### CouchStoryBlock
 `components/CouchStoryBlock.tsx` — renders the generated day story and reflection prompt based on the selected energy combination.
@@ -176,9 +191,10 @@ Open [http://localhost:3000](http://localhost:3000).
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+JOEY_ANTHROPIC_API_KEY=   # or ANTHROPIC_API_KEY
 ```
 
-Without these, Google OAuth will not work. Demo mode works without any env vars.
+Without Supabase vars, Google OAuth will not work. Demo mode works without any env vars. Without the Anthropic key, Joey chat will return errors.
 
 ---
 
@@ -210,17 +226,22 @@ how-you-doin/
 │   ├── EnergyCard.tsx        # Selectable energy cards
 │   ├── EnergyBadge.tsx       # Compact energy label
 │   ├── DateNavigator.tsx     # Horizontal date timeline (Journal screen)
-│   ├── JournalEditor.tsx     # TipTap editor
+│   ├── JournalEditor.tsx     # TipTap editor + voice input
 │   ├── CouchStoryBlock.tsx   # Generated day story
 │   ├── EntryDetail.tsx       # Full entry view
+│   ├── JoeyChat.tsx          # AI chat panel (streaming)
+│   ├── JoeyInvite.tsx        # Joey entry point (mobile strip / desktop FAB)
+│   ├── JoeyButton.tsx        # Reusable Joey CTA button
 │   └── BottomNav.tsx         # Mobile navigation
 ├── lib/
 │   ├── storage.ts            # Entry CRUD (Supabase + localStorage)
 │   ├── demo.ts               # Demo mode flag
 │   ├── energies.ts           # Energy config
 │   ├── couchStories.ts       # Story generation per energy combo
+│   ├── joey.ts               # Joey system prompt builder
 │   ├── i18n.tsx              # Translation hook
 │   └── types.ts              # Shared types
+├── app/api/joey/route.ts     # Streaming API route (claude-sonnet-4-6)
 └── locales/
     ├── en.json
     └── pl.json
