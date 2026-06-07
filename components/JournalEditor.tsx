@@ -74,6 +74,9 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
     }
   }, [content, editor])
 
+  const editorRef = useRef(editor)
+  useEffect(() => { editorRef.current = editor }, [editor])
+
   const recognitionRef = useRef<ISpeechRecognition | null>(null)
   const [voiceState, setVoiceState] = useState<VoiceState>("idle")
   const voiceStateRef = useRef<VoiceState>("idle")
@@ -96,7 +99,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
 
   const startListening = useCallback(() => {
     const Constructor = getSpeechRecognitionConstructor()
-    if (!Constructor || !editor) return
+    if (!Constructor || !editorRef.current) return
 
     const recognition = new Constructor()
     recognition.lang = lang === "pl" ? "pl-PL" : "en-US"
@@ -107,10 +110,10 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
 
     recognition.onresult = (event: ISpeechRecognitionEvent) => {
       const transcript = event.results[0]?.[0]?.transcript ?? ""
-      if (transcript) {
-        const currentText = editor.getText().trim()
-        editor.commands.focus("end")
-        editor.commands.insertContent((currentText ? " " : "") + transcript)
+      const ed = editorRef.current
+      if (transcript && ed) {
+        const prefix = ed.getText().trim() ? " " : ""
+        ed.chain().focus("end").insertContent(prefix + transcript).run()
       }
     }
 
@@ -150,7 +153,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
         }
       }, 3500)
     }
-  }, [lang, editor, t, updateVoiceState])
+  }, [lang, t, updateVoiceState])
 
   useEffect(() => {
     return () => { recognitionRef.current?.stop() }
