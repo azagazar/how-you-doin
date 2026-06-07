@@ -110,12 +110,6 @@ export default function HistoryPage() {
               <p className="font-serif text-black" style={{ fontSize: 18 }}>
                 {t("history.subtitle")}
               </p>
-              <div className="hidden lg:block">
-                <JoeyButton
-                  label={t("joey.buttonLabel")}
-                  onClick={() => setJoeyOpen(true)}
-                />
-              </div>
             </div>
 
             <DateNavigator
