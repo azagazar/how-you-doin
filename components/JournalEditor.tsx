@@ -6,11 +6,30 @@ import Placeholder from "@tiptap/extension-placeholder"
 import { useEffect, useRef, useState, useCallback } from "react"
 import { useI18n } from "@/lib/i18n"
 
-// Extend Window with WebSpeech API types
+// Minimal Web Speech API types (not in all TS DOM libs)
+interface ISpeechRecognition extends EventTarget {
+  lang: string
+  interimResults: boolean
+  maxAlternatives: number
+  onstart: (() => void) | null
+  onend: (() => void) | null
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null
+  onerror: ((event: ISpeechRecognitionErrorEvent) => void) | null
+  start(): void
+  stop(): void
+}
+interface ISpeechRecognitionEvent {
+  results: { [index: number]: { [index: number]: { transcript: string } } }
+}
+interface ISpeechRecognitionErrorEvent {
+  error: string
+}
+type SpeechRecognitionCtor = new () => ISpeechRecognition
+
 declare global {
   interface Window {
-    SpeechRecognition: new () => SpeechRecognition
-    webkitSpeechRecognition: new () => SpeechRecognition
+    SpeechRecognition?: SpeechRecognitionCtor
+    webkitSpeechRecognition?: SpeechRecognitionCtor
   }
 }
 
@@ -22,9 +41,13 @@ type Props = {
 
 type VoiceState = "idle" | "listening" | "error"
 
-function getSpeechRecognitionConstructor(): (new () => SpeechRecognition) | null {
+function getSpeechRecognitionConstructor(): SpeechRecognitionCtor | null {
   if (typeof window === "undefined") return null
-  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null
+  try {
+    return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null
+  } catch {
+    return null
+  }
 }
 
 export function JournalEditor({ content, onChange, placeholder }: Props) {
@@ -51,7 +74,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
     }
   }, [content, editor])
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<ISpeechRecognition | null>(null)
   const [voiceState, setVoiceState] = useState<VoiceState>("idle")
   const voiceStateRef = useRef<VoiceState>("idle")
   const [errorMsg, setErrorMsg] = useState("")
@@ -82,7 +105,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
 
     recognition.onstart = () => updateVoiceState("listening")
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: ISpeechRecognitionEvent) => {
       const transcript = event.results[0]?.[0]?.transcript ?? ""
       if (transcript) {
         const currentText = editor.getText().trim()
@@ -91,7 +114,7 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
       }
     }
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
       let msg = t("voice.errorGeneric")
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         msg = t("voice.errorPermission")
