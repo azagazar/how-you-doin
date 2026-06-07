@@ -65,7 +65,7 @@ export default function OnboardingPage() {
               {t("onboarding.nameLabel")}
             </p>
 
-            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+            <form onSubmit={handleSubmit} autoComplete="off" className="w-full flex flex-col gap-4">
               {/* Name input */}
               <div className="border border-[#6a4f79] bg-[#faf8f4]">
                 <input
@@ -74,7 +74,7 @@ export default function OnboardingPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("onboarding.namePlaceholder")}
-                  autoComplete="given-name"
+                  autoComplete="off"
                   autoFocus
                   className="w-full px-4 py-3 bg-transparent font-serif text-lg text-black placeholder:text-[#938d8d] focus:outline-none"
                 />
