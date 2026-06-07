@@ -80,6 +80,8 @@ export default function CheckInPage() {
     Promise.all([init(), minDelay]).then(() => {
       if (redirect) router.replace(redirect)
       else setAppReady(true)
+    }).catch(() => {
+      router.replace("/login")
     })
   }, [router])
 

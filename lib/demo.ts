@@ -7,17 +7,19 @@ const DEMO_ENTRIES_KEY = "hyd_demo_entries"
 
 export function isDemoMode(): boolean {
   if (typeof window === "undefined") return false
-  return localStorage.getItem(DEMO_KEY) === "true"
+  try { return localStorage.getItem(DEMO_KEY) === "true" } catch { return false }
 }
 
 export function setDemoMode(on: boolean): void {
   if (typeof window === "undefined") return
-  if (on) {
-    localStorage.setItem(DEMO_KEY, "true")
-  } else {
-    localStorage.removeItem(DEMO_KEY)
-    localStorage.removeItem(DEMO_ENTRIES_KEY)
-  }
+  try {
+    if (on) {
+      localStorage.setItem(DEMO_KEY, "true")
+    } else {
+      localStorage.removeItem(DEMO_KEY)
+      localStorage.removeItem(DEMO_ENTRIES_KEY)
+    }
+  } catch { /* unavailable */ }
 }
 
 // ─── Demo CRUD (localStorage only) ───────────────────────────────────────────
@@ -25,7 +27,7 @@ export function setDemoMode(on: boolean): void {
 export function getDemoEntries(): JournalEntry[] {
   if (typeof window === "undefined") return []
   try {
-    return JSON.parse(localStorage.getItem(DEMO_ENTRIES_KEY) || "[]")
+    return JSON.parse(localStorage.getItem(DEMO_ENTRIES_KEY) || "[]") as JournalEntry[]
   } catch {
     return []
   }

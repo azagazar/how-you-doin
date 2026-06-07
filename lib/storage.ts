@@ -8,11 +8,11 @@ const NAME_KEY = "hyd_name"
 
 export function getUserName(): string | null {
   if (typeof window === "undefined") return null
-  return localStorage.getItem(NAME_KEY)
+  try { return localStorage.getItem(NAME_KEY) } catch { return null }
 }
 
 export function setUserName(name: string): void {
-  localStorage.setItem(NAME_KEY, name)
+  try { localStorage.setItem(NAME_KEY, name) } catch { /* unavailable */ }
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

@@ -41,8 +41,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en")
 
   useEffect(() => {
-    const stored = localStorage.getItem(LANG_KEY)
-    if (stored === "en" || stored === "pl") setLangState(stored)
+    try {
+      const stored = localStorage.getItem(LANG_KEY)
+      if (stored === "en" || stored === "pl") setLangState(stored)
+    } catch { /* localStorage unavailable (e.g. iOS private mode) */ }
   }, [])
 
   const translations = (lang === "pl" ? pl : en) as NestedObject
@@ -51,7 +53,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = (l: Lang) => {
     setLangState(l)
-    if (typeof window !== "undefined") localStorage.setItem(LANG_KEY, l)
+    try {
+      if (typeof window !== "undefined") localStorage.setItem(LANG_KEY, l)
+    } catch { /* localStorage unavailable */ }
   }
 
   return (
