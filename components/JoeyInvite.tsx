@@ -42,18 +42,10 @@ export function JoeyInvite({ onClick, lang }: Props) {
       <button
         onClick={onClick}
         aria-label={LABEL[lang]}
-        className="
-          hidden lg:flex
-          fixed bottom-8 right-8 z-20
-          items-center gap-3
-          bg-[#6FB6D4] border border-[#6FB6D4] border-b-4
-          px-6 py-3
-          shadow-lg
-          transition-opacity hover:opacity-80 active:opacity-60
-        "
+        className="hidden lg:inline-flex figma-btn gap-2 !bg-[#6FB6D4] !border-[#6FB6D4] fixed bottom-8 right-8 z-20"
       >
-        <span className="text-2xl leading-none" aria-hidden="true">🍕</span>
-        <span className="font-display text-[#fde52f] text-xl uppercase leading-none tracking-wide">
+        <span className="font-display text-[#fde52f] text-xl leading-none uppercase translate-y-[2px] flex items-center gap-2">
+          <span aria-hidden="true">🍕</span>
           {LABEL[lang]}
         </span>
       </button>
