@@ -167,7 +167,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
 
         {/* Messages */}
         <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4">
-          {messages.map((msg) => (
+          {messages.map((msg) => msg.role === "assistant" && msg.content === "" ? null : (
             <div
               key={msg.id}
               className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
