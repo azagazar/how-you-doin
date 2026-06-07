@@ -42,10 +42,12 @@ export default function HistoryPage() {
 
   useEffect(() => {
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session && !isDemoMode()) {
-        router.replace("/login")
-        return
+      if (!isDemoMode()) {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+          router.replace("/login")
+          return
+        }
       }
       if (!getUserName()) {
         router.replace("/onboarding")

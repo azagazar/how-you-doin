@@ -54,10 +54,12 @@ export default function CheckInPage() {
     let redirect: string | null = null
 
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session && !isDemoMode()) {
-        redirect = "/login"
-        return
+      if (!isDemoMode()) {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+          redirect = "/login"
+          return
+        }
       }
 
       const name = getUserName()

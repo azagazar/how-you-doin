@@ -12,10 +12,6 @@ const LABEL: Record<Lang, string> = {
   pl: "Pogadaj z Joeyem",
 }
 
-/**
- * Mobile: slim strip pinned above the bottom nav — never overlaps content.
- * Desktop: not rendered here; Joey entry is embedded in the quote bar instead.
- */
 export function JoeyInvite({ onClick, lang }: Props) {
   return (
     <>
