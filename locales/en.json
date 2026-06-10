@@ -63,7 +63,9 @@
   },
   "settings": {
     "title": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "developer": "Developer",
+    "apiDocs": "API Documentation"
   },
   "joey": {
     "buttonLabel": "Ask Joey",
@@ -84,12 +86,24 @@
     "errorGeneric": "Something went wrong. Try again."
   },
   "energies": {
-    "monica": { "tagline": "Getting Things Done" },
-    "chandler": { "tagline": "Laughing Through It" },
-    "ross": { "tagline": "Thinking About It Too Much" },
-    "joey": { "tagline": "Enjoying The Moment" },
-    "phoebe": { "tagline": "Trusting The Universe" },
-    "rachel": { "tagline": "Growing Into Something New" }
+    "monica": {
+      "tagline": "Getting Things Done"
+    },
+    "chandler": {
+      "tagline": "Laughing Through It"
+    },
+    "ross": {
+      "tagline": "Thinking About It Too Much"
+    },
+    "joey": {
+      "tagline": "Enjoying The Moment"
+    },
+    "phoebe": {
+      "tagline": "Trusting The Universe"
+    },
+    "rachel": {
+      "tagline": "Growing Into Something New"
+    }
   },
   "stories": {
     "openCouch": {

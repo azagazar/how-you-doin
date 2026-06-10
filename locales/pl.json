@@ -63,7 +63,9 @@
   },
   "settings": {
     "title": "Ustawienia",
-    "language": "Język"
+    "language": "Język",
+    "developer": "Developer",
+    "apiDocs": "Dokumentacja API"
   },
   "joey": {
     "buttonLabel": "Pogadaj z Joeyem",
@@ -84,12 +86,24 @@
     "errorGeneric": "Coś poszło nie tak. Spróbuj ponownie."
   },
   "energies": {
-    "monica": { "tagline": "Ogarniam wszystko" },
-    "chandler": { "tagline": "Śmieję się mimo wszystko" },
-    "ross": { "tagline": "Za dużo myślę" },
-    "joey": { "tagline": "Żyję chwilą" },
-    "phoebe": { "tagline": "Płynę z nurtem" },
-    "rachel": { "tagline": "Odkrywam siebie" }
+    "monica": {
+      "tagline": "Ogarniam wszystko"
+    },
+    "chandler": {
+      "tagline": "Śmieję się mimo wszystko"
+    },
+    "ross": {
+      "tagline": "Za dużo myślę"
+    },
+    "joey": {
+      "tagline": "Żyję chwilą"
+    },
+    "phoebe": {
+      "tagline": "Płynę z nurtem"
+    },
+    "rachel": {
+      "tagline": "Odkrywam siebie"
+    }
   },
   "stories": {
     "openCouch": {

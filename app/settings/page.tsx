@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useI18n } from "@/lib/i18n"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
@@ -52,6 +53,24 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
+          {/* Developer */}
+          <div className="space-y-3">
+            <p className="font-display text-xl text-[#6a4f79] uppercase">
+              {t("settings.developer")}
+            </p>
+            <Link
+              href="/docs"
+              className="w-full flex items-center justify-between px-4 py-3 border transition-all hover:opacity-80"
+              style={{ background: "#f7f3ec", borderColor: "#6a4f79", borderBottomWidth: 4 }}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl">📄</span>
+                <span className="font-serif text-base text-black">{t("settings.apiDocs")}</span>
+              </div>
+              <span className="font-display text-xl text-[#6a4f79]">→</span>
+            </Link>
+          </div>
+
         </div>
       </div>
       <BottomNav />
