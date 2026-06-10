@@ -6,15 +6,23 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Nav structure ────────────────────────────────────────────────────────────
 
-type Tab = "api" | "mcp"
-type ApiSection = "authentication" | "create" | "ask" | "read-today" | "read-entries"
-type McpSection = "mcp-connect" | "mcp-tools"
+const NAV = [
+  { id: "authentication", label: "Authentication",  group: "Getting Started" },
+  { id: "create",         label: "Create Entry",    group: "API" },
+  { id: "ask",            label: "Ask Joey",         group: "API" },
+  { id: "read-today",     label: "Read Today",       group: "API" },
+  { id: "read-entries",   label: "Read Entries",     group: "API" },
+  { id: "mcp-connect",    label: "Connect",          group: "MCP" },
+  { id: "mcp-tools",      label: "Tools",            group: "MCP" },
+]
+
+const GROUPS = ["Getting Started", "API", "MCP"]
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
-function Code({ children, lang = "bash" }: { children: string; lang?: string }) {
+function Code({ children }: { children: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <div className="relative group border border-[#6a4f79] bg-[#14121f]">
@@ -31,10 +39,8 @@ function Code({ children, lang = "bash" }: { children: string; lang?: string }) 
 
 function MethodBadge({ method }: { method: "GET" | "POST" }) {
   return (
-    <span
-      className="font-display text-xs uppercase px-2 py-0.5 border border-[#6a4f79] select-none"
-      style={{ background: method === "GET" ? "#fde52f" : "#6a4f79", color: method === "GET" ? "#000" : "#fde52f" }}
-    >
+    <span className="font-display text-xs uppercase px-2 py-0.5 border border-[#6a4f79] select-none"
+      style={{ background: method === "GET" ? "#fde52f" : "#6a4f79", color: method === "GET" ? "#000" : "#fde52f" }}>
       {method}
     </span>
   )
@@ -67,7 +73,7 @@ function ParamRow({ name, type, required, desc }: { name: string; type: string; 
   )
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
+function Label({ children }: { children: React.ReactNode }) {
   return <p className="font-display text-xs uppercase text-[#6a4f79] tracking-widest mb-2">{children}</p>
 }
 
@@ -101,291 +107,224 @@ function TokenWidget() {
   }
 
   if (loading) return (
-    <div className="border border-[#6a4f79] bg-[#f7f3ec] px-5 py-4 flex items-center gap-3">
-      <span className="font-display text-sm uppercase text-[#938d8d]">Loading…</span>
+    <div className="border border-[#6a4f79]/30 bg-[#f7f3ec] px-4 py-3">
+      <span className="font-display text-xs uppercase text-[#938d8d]">Loading…</span>
     </div>
   )
 
   if (!loggedIn) return (
-    <div className="border border-[#6a4f79] bg-[#f7f3ec] px-5 py-4 flex items-center justify-between gap-4">
-      <div>
-        <p className="font-display text-sm uppercase text-[#6a4f79] tracking-wide mb-0.5">Personal API Token</p>
-        <p className="font-serif text-sm text-[#938d8d]">Log in to generate your token.</p>
-      </div>
-      <Link href="/login" className="flex-shrink-0 figma-btn px-4 py-2 font-display text-lg uppercase">
+    <div className="border border-[#6a4f79]/30 bg-[#f7f3ec] px-4 py-3 space-y-2">
+      <p className="font-display text-xs uppercase text-[#6a4f79] tracking-widest">Personal Token</p>
+      <Link href="/login" className="block w-full text-center figma-btn py-2 font-display text-base uppercase">
         Log in
       </Link>
     </div>
   )
 
   const display = apiKey
-    ? revealed ? apiKey : `${apiKey.slice(0, 12)}${"•".repeat(36)}`
+    ? revealed ? apiKey : `${apiKey.slice(0, 12)}${"•".repeat(32)}`
     : "—"
 
   return (
-    <div className="border border-[#6a4f79] bg-[#f7f3ec] px-5 py-4 space-y-3">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-display text-sm uppercase text-[#6a4f79] tracking-wide mb-0.5">Personal API Token</p>
-          <p className="font-serif text-xs text-[#938d8d]">Use this as your <code className="font-mono">Authorization: Bearer</code> header on all requests.</p>
-        </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button onClick={() => setRevealed(r => !r)} className="font-display text-xs uppercase px-3 py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors">{revealed ? "Hide" : "Reveal"}</button>
-          <button onClick={() => { if (apiKey) { navigator.clipboard.writeText(apiKey); setCopied(true); setTimeout(() => setCopied(false), 1800) } }} className="font-display text-xs uppercase px-3 py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors">{copied ? "Copied!" : "Copy"}</button>
-          <button onClick={regenerate} disabled={regenerating} className="font-display text-xs uppercase px-3 py-1.5 bg-[#6a4f79] text-[#fde52f] border border-[#6a4f79] hover:opacity-80 transition-opacity disabled:opacity-40">{regenerating ? "…" : "Regenerate"}</button>
-        </div>
-      </div>
-      <code className="block font-mono text-sm bg-[#14121f] text-[#e2e8f0] px-4 py-2.5 border border-[#6a4f79] break-all">
+    <div className="border border-[#6a4f79]/30 bg-[#f7f3ec] px-4 py-3 space-y-2">
+      <p className="font-display text-xs uppercase text-[#6a4f79] tracking-widest">Personal Token</p>
+      <code className="block font-mono text-xs bg-[#14121f] text-[#e2e8f0] px-3 py-2 border border-[#6a4f79]/40 break-all leading-relaxed">
         {display}
       </code>
+      <div className="flex items-center gap-1.5">
+        <button onClick={() => setRevealed(r => !r)} className="flex-1 font-display text-[11px] uppercase py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors">{revealed ? "Hide" : "Reveal"}</button>
+        <button onClick={() => { if (apiKey) { navigator.clipboard.writeText(apiKey); setCopied(true); setTimeout(() => setCopied(false), 1800) } }} className="flex-1 font-display text-[11px] uppercase py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors">{copied ? "Copied!" : "Copy"}</button>
+        <button onClick={regenerate} disabled={regenerating} className="flex-1 font-display text-[11px] uppercase py-1.5 bg-[#6a4f79] text-[#fde52f] border border-[#6a4f79] hover:opacity-80 transition-opacity disabled:opacity-40">{regenerating ? "…" : "Regen"}</button>
+      </div>
     </div>
   )
 }
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
+// ─── Content sections ─────────────────────────────────────────────────────────
 
-function NavLink({ label, id, active }: { label: string; id: string; active: boolean }) {
-  return (
-    <a href={`#${id}`} className={`block px-3 py-1.5 font-display text-[15px] uppercase leading-none transition-colors ${active ? "bg-[#fde52f] text-black border-l-4 border-[#6a4f79]" : "text-[#423b35]/70 hover:text-[#6a4f79]"}`}>
-      {label}
-    </a>
-  )
-}
-
-// ─── API tab content ──────────────────────────────────────────────────────────
-
-const API_NAV = [
-  { id: "authentication", label: "Authentication", group: "Getting Started" },
-  { id: "create", label: "Create Entry", group: "Endpoints" },
-  { id: "ask", label: "Ask Joey", group: "Endpoints" },
-  { id: "read-today", label: "Read Today", group: "Endpoints" },
-  { id: "read-entries", label: "Read Entries", group: "Endpoints" },
-]
-
-function ApiContent() {
+function SectionContent({ id, apiKey }: { id: string; apiKey: string | null }) {
   const BASE = "https://how-you-doin.vercel.app"
-  return (
-    <div className="space-y-16">
-      <section id="authentication" className="space-y-4">
-        <h2 className="font-display text-4xl uppercase leading-none">Authentication</h2>
-        <p className="font-serif text-[#423b35]">All endpoints require your personal token as a Bearer header.</p>
-        <Code>{`Authorization: Bearer hyd_your_token`}</Code>
-      </section>
+  const token = apiKey ?? "hyd_your_token"
+  const mcpUrl = `${BASE}/api/mcp/mcp`
 
-      <section id="create" className="space-y-4">
-        <h2 className="font-display text-4xl uppercase leading-none">Create Entry</h2>
-        <EndpointHeader method="POST" path="/api/v1/entry" summary="Create or update a journal entry for a given date. If an entry already exists for that date it will be updated." />
-        <SectionTitle>Request body</SectionTitle>
-        <table className="w-full text-left"><tbody>
-          <ParamRow name="note" type="string" required desc="The journal text." />
-          <ParamRow name="date" type="string" desc="YYYY-MM-DD — defaults to today." />
-          <ParamRow name="primary_energy" type="string" desc="monica · chandler · ross · joey · phoebe · rachel" />
-          <ParamRow name="secondary_energy" type="string" desc="A second energy from the same set." />
-        </tbody></table>
-        <SectionTitle>Example</SectionTitle>
-        <Code>{`curl -X POST ${BASE}/api/v1/entry \\
-  -H "Authorization: Bearer hyd_your_token" \\
+  if (id === "authentication") return (
+    <div className="space-y-5">
+      <h2 className="font-display text-4xl uppercase leading-none">Authentication</h2>
+      <p className="font-serif text-[#423b35]">All endpoints require your personal token as a Bearer header.</p>
+      <Code>{`Authorization: Bearer hyd_your_token`}</Code>
+      <p className="font-serif text-sm text-[#938d8d]">Your token is shown in the left panel. Regenerating it immediately invalidates the previous one.</p>
+    </div>
+  )
+
+  if (id === "create") return (
+    <div className="space-y-5">
+      <h2 className="font-display text-4xl uppercase leading-none">Create Entry</h2>
+      <EndpointHeader method="POST" path="/api/v1/entry" summary="Create or update a journal entry. If an entry already exists for that date it will be updated. Energies are optional." />
+      <Label>Request body</Label>
+      <table className="w-full text-left"><tbody>
+        <ParamRow name="note" type="string" required desc="The journal text." />
+        <ParamRow name="date" type="string" desc="YYYY-MM-DD — defaults to today." />
+        <ParamRow name="primary_energy" type="string" desc="monica · chandler · ross · joey · phoebe · rachel" />
+        <ParamRow name="secondary_energy" type="string" desc="A second energy from the same set." />
+      </tbody></table>
+      <Label>Example</Label>
+      <Code>{`curl -X POST ${BASE}/api/v1/entry \\
+  -H "Authorization: Bearer ${token}" \\
   -H "Content-Type: application/json" \\
   -d '{"note": "Long day, but I got through it.", "primary_energy": "monica"}'`}</Code>
-        <SectionTitle>Response</SectionTitle>
-        <Code>{`{ "ok": true, "action": "created", "entry": { "id": "…", "date": "2026-06-11", "primary_energy": "monica", "secondary_energy": null, "note": "Long day, but I got through it." } }`}</Code>
-      </section>
-
-      <section id="ask" className="space-y-4">
-        <h2 className="font-display text-4xl uppercase leading-none">Ask Joey</h2>
-        <EndpointHeader method="POST" path="/api/v1/ask-joey" summary="Send a message to Joey. He responds based on the journal entry for the given date. History is loaded automatically when the question requires it." />
-        <SectionTitle>Request body</SectionTitle>
-        <table className="w-full text-left"><tbody>
-          <ParamRow name="message" type="string" required desc="The question or message for Joey." />
-          <ParamRow name="date" type="string" desc="Date context — defaults to today." />
-          <ParamRow name="include_history" type="boolean" desc="Force loading recent entries. Auto-detected by default." />
-        </tbody></table>
-        <SectionTitle>Example</SectionTitle>
-        <Code>{`curl -X POST ${BASE}/api/v1/ask-joey \\
-  -H "Authorization: Bearer hyd_your_token" \\
-  -H "Content-Type: application/json" \\
-  -d '{"message": "How has my week been?"}'`}</Code>
-        <SectionTitle>Response</SectionTitle>
-        <Code>{`{ "reply": "Looking at your week — Monday was full-on Monica, Wednesday Joey-style easy. That's a solid balance.", "context": { "date": "2026-06-11", "used_history": true, "entries_loaded": 5 } }`}</Code>
-      </section>
-
-      <section id="read-today" className="space-y-4">
-        <h2 className="font-display text-4xl uppercase leading-none">Read Today</h2>
-        <EndpointHeader method="GET" path="/api/v1/today" summary="Returns today's journal entry, including the couch story and reflection prompt for the selected energies." />
-        <SectionTitle>Example</SectionTitle>
-        <Code>{`curl ${BASE}/api/v1/today -H "Authorization: Bearer hyd_your_token"`}</Code>
-        <SectionTitle>Response</SectionTitle>
-        <Code>{`{ "date": "2026-06-11", "exists": true, "primary_energy": "monica", "secondary_energy": null, "note": "Long day, but I got through it.", "couch_story": { "dayTitle": "Getting Things Done", "story": "…", "reflection": "What's one thing you can let go of today?" } }`}</Code>
-      </section>
-
-      <section id="read-entries" className="space-y-4">
-        <h2 className="font-display text-4xl uppercase leading-none">Read Entries</h2>
-        <EndpointHeader method="GET" path="/api/v1/entries" summary="Returns a list of journal entries, newest first. Supports limit and date range filters." />
-        <SectionTitle>Query params</SectionTitle>
-        <table className="w-full text-left"><tbody>
-          <ParamRow name="limit" type="number" desc="Max entries — default 10, max 50." />
-          <ParamRow name="from" type="string" desc="Start date YYYY-MM-DD, inclusive." />
-          <ParamRow name="to" type="string" desc="End date YYYY-MM-DD, inclusive." />
-        </tbody></table>
-        <SectionTitle>Example</SectionTitle>
-        <Code>{`curl "${BASE}/api/v1/entries?limit=5" -H "Authorization: Bearer hyd_your_token"`}</Code>
-        <SectionTitle>Response</SectionTitle>
-        <Code>{`{ "entries": [{ "id": "…", "date": "2026-06-11", "primary_energy": "monica", "secondary_energy": null, "note": "Long day, but I got through it." }], "total": 1 }`}</Code>
-      </section>
+      <Label>Response</Label>
+      <Code>{`{ "ok": true, "action": "created", "entry": { "id": "…", "date": "2026-06-11", "primary_energy": "monica", "secondary_energy": null, "note": "Long day, but I got through it." } }`}</Code>
     </div>
   )
-}
 
-// ─── MCP tab content ──────────────────────────────────────────────────────────
+  if (id === "ask") return (
+    <div className="space-y-5">
+      <h2 className="font-display text-4xl uppercase leading-none">Ask Joey</h2>
+      <EndpointHeader method="POST" path="/api/v1/ask-joey" summary="Send a message to Joey. He responds based on the journal entry for the given date and loads history automatically when the question needs it." />
+      <Label>Request body</Label>
+      <table className="w-full text-left"><tbody>
+        <ParamRow name="message" type="string" required desc="The question or message for Joey." />
+        <ParamRow name="date" type="string" desc="Date context — defaults to today." />
+        <ParamRow name="include_history" type="boolean" desc="Force loading recent entries. Auto-detected by default." />
+      </tbody></table>
+      <Label>Example</Label>
+      <Code>{`curl -X POST ${BASE}/api/v1/ask-joey \\
+  -H "Authorization: Bearer ${token}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message": "How has my week been?"}'`}</Code>
+      <Label>Response</Label>
+      <Code>{`{ "reply": "Looking at your week — Monday was full-on Monica, Wednesday Joey-style easy. That's a solid balance.", "context": { "date": "2026-06-11", "used_history": true, "entries_loaded": 5 } }`}</Code>
+    </div>
+  )
 
-const MCP_NAV = [
-  { id: "mcp-connect", label: "Connect", group: "Getting Started" },
-  { id: "mcp-tools", label: "Tools", group: "Reference" },
-]
+  if (id === "read-today") return (
+    <div className="space-y-5">
+      <h2 className="font-display text-4xl uppercase leading-none">Read Today</h2>
+      <EndpointHeader method="GET" path="/api/v1/today" summary="Returns today's journal entry, including the couch story and reflection prompt for the selected energies. Returns a clear empty state if no entry exists yet." />
+      <Label>Example</Label>
+      <Code>{`curl ${BASE}/api/v1/today \\
+  -H "Authorization: Bearer ${token}"`}</Code>
+      <Label>Response — entry exists</Label>
+      <Code>{`{ "date": "2026-06-11", "exists": true, "primary_energy": "monica", "secondary_energy": null, "note": "Long day, but I got through it.", "couch_story": { "dayTitle": "Getting Things Done", "story": "…", "reflection": "What's one thing you can let go of today?" } }`}</Code>
+      <Label>Response — no entry yet</Label>
+      <Code>{`{ "date": "2026-06-11", "exists": false, "primary_energy": null, "secondary_energy": null, "note": null, "couch_story": { "dayTitle": "…", "story": "…", "reflection": "…" } }`}</Code>
+    </div>
+  )
 
-function McpContent({ apiKey }: { apiKey: string | null }) {
-  const BASE = "https://how-you-doin.vercel.app"
-  const mcpUrl = `${BASE}/api/mcp/mcp`
-  const tokenPlaceholder = apiKey ?? "hyd_your_token"
+  if (id === "read-entries") return (
+    <div className="space-y-5">
+      <h2 className="font-display text-4xl uppercase leading-none">Read Entries</h2>
+      <EndpointHeader method="GET" path="/api/v1/entries" summary="Returns a list of journal entries, newest first. Supports limit and date range filters." />
+      <Label>Query params</Label>
+      <table className="w-full text-left"><tbody>
+        <ParamRow name="limit" type="number" desc="Max entries — default 10, max 50." />
+        <ParamRow name="from" type="string" desc="Start date YYYY-MM-DD, inclusive." />
+        <ParamRow name="to" type="string" desc="End date YYYY-MM-DD, inclusive." />
+      </tbody></table>
+      <Label>Example</Label>
+      <Code>{`curl "${BASE}/api/v1/entries?limit=5" \\
+  -H "Authorization: Bearer ${token}"`}</Code>
+      <Label>Response</Label>
+      <Code>{`{ "entries": [{ "id": "…", "date": "2026-06-11", "primary_energy": "monica", "secondary_energy": null, "note": "Long day, but I got through it." }], "total": 1 }`}</Code>
+    </div>
+  )
 
-  return (
-    <div className="space-y-16">
-      <section id="mcp-connect" className="space-y-5">
-        <h2 className="font-display text-4xl uppercase leading-none">Connect</h2>
-        <p className="font-serif text-[#423b35]">
-          The MCP server is available at the URL below. It implements the{" "}
-          <span className="font-mono text-sm text-[#6a4f79]">StreamableHTTP</span> transport — the modern standard for remote MCP servers.
-          Any MCP-compatible client (Claude Desktop, Cursor, Windsurf, Claude Code…) can connect with your personal token.
-        </p>
+  if (id === "mcp-connect") return (
+    <div className="space-y-6">
+      <h2 className="font-display text-4xl uppercase leading-none">Connect</h2>
+      <p className="font-serif text-[#423b35]">The MCP server uses the <span className="font-mono text-sm text-[#6a4f79]">StreamableHTTP</span> transport — the modern standard for remote MCP servers. Any MCP-compatible client can connect using your personal token.</p>
 
-        <div className="border border-[#6a4f79] bg-[#f7f3ec] p-4 space-y-1">
-          <p className="font-display text-xs uppercase text-[#6a4f79] tracking-widest">Server URL</p>
-          <code className="font-mono text-sm text-[#423b35] break-all">{mcpUrl}</code>
-        </div>
+      <div className="border border-[#6a4f79] bg-[#f7f3ec] px-4 py-3 space-y-1">
+        <Label>Server URL</Label>
+        <code className="font-mono text-sm text-[#423b35] break-all">{mcpUrl}</code>
+      </div>
 
-        <SectionTitle>Claude Desktop — claude_desktop_config.json</SectionTitle>
-        <Code lang="json">{`{
+      <div className="space-y-3">
+        <Label>Claude Desktop — claude_desktop_config.json</Label>
+        <Code>{`{
   "mcpServers": {
     "how-you-doin": {
       "type": "http",
       "url": "${mcpUrl}",
       "headers": {
-        "Authorization": "Bearer ${tokenPlaceholder}"
+        "Authorization": "Bearer ${token}"
       }
     }
   }
 }`}</Code>
+      </div>
 
-        <SectionTitle>Claude Code — MCP config</SectionTitle>
-        <Code lang="bash">{`claude mcp add how-you-doin \\
+      <div className="space-y-3">
+        <Label>Claude Code</Label>
+        <Code>{`claude mcp add how-you-doin \\
   --transport http \\
   --url ${mcpUrl} \\
-  --header "Authorization: Bearer ${tokenPlaceholder}"`}</Code>
+  --header "Authorization: Bearer ${token}"`}</Code>
+      </div>
 
-        <SectionTitle>Cursor / Windsurf — mcp.json</SectionTitle>
-        <Code lang="json">{`{
+      <div className="space-y-3">
+        <Label>Cursor / Windsurf — mcp.json</Label>
+        <Code>{`{
   "mcpServers": {
     "how-you-doin": {
       "url": "${mcpUrl}",
       "headers": {
-        "Authorization": "Bearer ${tokenPlaceholder}"
+        "Authorization": "Bearer ${token}"
       }
     }
   }
 }`}</Code>
-      </section>
-
-      <section id="mcp-tools" className="space-y-8">
-        <h2 className="font-display text-4xl uppercase leading-none">Tools</h2>
-        <p className="font-serif text-[#423b35]">The server exposes four tools. All tool calls require your token — passed once at connection time.</p>
-
-        {/* Tool 1 */}
-        <div className="space-y-3">
-          <div className="border-b-4 border-[#6a4f79] pb-3">
-            <code className="font-mono text-base text-[#6a4f79]">journal_get_today</code>
-            <p className="font-serif text-sm text-[#423b35] mt-1">Get the journal entry for today or a specific date, including the couch story and reflection prompt.</p>
-          </div>
-          <table className="w-full text-left"><tbody>
-            <ParamRow name="date" type="string" desc="YYYY-MM-DD — defaults to today." />
-          </tbody></table>
-        </div>
-
-        {/* Tool 2 */}
-        <div className="space-y-3">
-          <div className="border-b-4 border-[#6a4f79] pb-3">
-            <code className="font-mono text-base text-[#6a4f79]">journal_save_entry</code>
-            <p className="font-serif text-sm text-[#423b35] mt-1">Create or update a journal entry. Energies are optional — omit them to save a note without any energy selected.</p>
-          </div>
-          <table className="w-full text-left"><tbody>
-            <ParamRow name="note" type="string" required desc="The journal text." />
-            <ParamRow name="date" type="string" desc="YYYY-MM-DD — defaults to today." />
-            <ParamRow name="primary_energy" type="enum" desc="monica · chandler · ross · joey · phoebe · rachel" />
-            <ParamRow name="secondary_energy" type="enum" desc="A second energy from the same set." />
-          </tbody></table>
-        </div>
-
-        {/* Tool 3 */}
-        <div className="space-y-3">
-          <div className="border-b-4 border-[#6a4f79] pb-3">
-            <code className="font-mono text-base text-[#6a4f79]">journal_list_entries</code>
-            <p className="font-serif text-sm text-[#423b35] mt-1">List journal entries, newest first. Useful for reviewing recent history or building context for Joey.</p>
-          </div>
-          <table className="w-full text-left"><tbody>
-            <ParamRow name="limit" type="number" desc="Max entries — default 10, max 50." />
-            <ParamRow name="from" type="string" desc="Start date YYYY-MM-DD, inclusive." />
-            <ParamRow name="to" type="string" desc="End date YYYY-MM-DD, inclusive." />
-          </tbody></table>
-        </div>
-
-        {/* Tool 4 */}
-        <div className="space-y-3">
-          <div className="border-b-4 border-[#6a4f79] pb-3">
-            <code className="font-mono text-base text-[#6a4f79]">joey_ask</code>
-            <p className="font-serif text-sm text-[#423b35] mt-1">Send a message to Joey. He responds based on the relevant journal entry and detects automatically when broader history is needed.</p>
-          </div>
-          <table className="w-full text-left"><tbody>
-            <ParamRow name="message" type="string" required desc="The question or message for Joey." />
-            <ParamRow name="date" type="string" desc="Date context — defaults to today." />
-          </tbody></table>
-        </div>
-      </section>
+      </div>
     </div>
   )
+
+  if (id === "mcp-tools") return (
+    <div className="space-y-8">
+      <h2 className="font-display text-4xl uppercase leading-none">Tools</h2>
+      <p className="font-serif text-[#423b35]">The server exposes four tools. Authentication is handled once at connection time via your Bearer token.</p>
+
+      {[
+        { name: "journal_get_today", desc: "Get the journal entry for today or a specific date, including the couch story and reflection prompt.", params: [{ name: "date", type: "string", desc: "YYYY-MM-DD — defaults to today." }] },
+        { name: "journal_save_entry", desc: "Create or update a journal entry. Energies are optional — omit them to save without any energy selected.", params: [
+          { name: "note", type: "string", required: true, desc: "The journal text." },
+          { name: "date", type: "string", desc: "YYYY-MM-DD — defaults to today." },
+          { name: "primary_energy", type: "enum", desc: "monica · chandler · ross · joey · phoebe · rachel" },
+          { name: "secondary_energy", type: "enum", desc: "A second energy from the same set." },
+        ]},
+        { name: "journal_list_entries", desc: "List journal entries, newest first. Useful for reviewing recent history or building context for Joey.", params: [
+          { name: "limit", type: "number", desc: "Max entries — default 10, max 50." },
+          { name: "from", type: "string", desc: "Start date YYYY-MM-DD, inclusive." },
+          { name: "to", type: "string", desc: "End date YYYY-MM-DD, inclusive." },
+        ]},
+        { name: "joey_ask", desc: "Send a message to Joey. He responds based on the relevant journal entry and detects automatically when broader history is needed.", params: [
+          { name: "message", type: "string", required: true, desc: "The question or message for Joey." },
+          { name: "date", type: "string", desc: "Date context — defaults to today." },
+        ]},
+      ].map(tool => (
+        <div key={tool.name} className="space-y-3">
+          <div className="pb-3 border-b-4 border-[#6a4f79]">
+            <code className="font-mono text-base text-[#6a4f79]">{tool.name}</code>
+            <p className="font-serif text-sm text-[#423b35] mt-1">{tool.desc}</p>
+          </div>
+          <table className="w-full text-left"><tbody>
+            {tool.params.map(p => <ParamRow key={p.name} name={p.name} type={p.type} required={(p as { required?: boolean }).required} desc={p.desc} />)}
+          </tbody></table>
+        </div>
+      ))}
+    </div>
+  )
+
+  return null
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DocsPage() {
-  const [tab, setTab] = useState<Tab>("api")
-  const [active, setActive] = useState<string>("authentication")
+  const [active, setActive] = useState("authentication")
   const [apiKey, setApiKey] = useState<string | null>(null)
-  const mainRef = useRef<HTMLDivElement>(null)
+  const mobileNavRef = useRef<HTMLDivElement>(null)
 
-  const nav = tab === "api" ? API_NAV : MCP_NAV
-
-  // Scroll spy
-  useEffect(() => {
-    const el = mainRef.current
-    if (!el) return
-    const onScroll = () => {
-      const ids = nav.map(n => n.id)
-      for (let i = ids.length - 1; i >= 0; i--) {
-        const el = document.getElementById(ids[i])
-        if (el && el.getBoundingClientRect().top <= 120) { setActive(ids[i]); return }
-      }
-      setActive(ids[0])
-    }
-    el.addEventListener("scroll", onScroll)
-    return () => el.removeEventListener("scroll", onScroll)
-  }, [tab, nav])
-
-  // Reset active section on tab switch
-  useEffect(() => {
-    setActive(nav[0].id)
-    mainRef.current?.scrollTo({ top: 0 })
-  }, [tab]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Load API key for MCP config examples
+  // Load API key for examples
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return
@@ -394,59 +333,89 @@ export default function DocsPage() {
     })
   }, [])
 
+  // Scroll active mobile tab into view
+  useEffect(() => {
+    const el = mobileNavRef.current?.querySelector(`[data-id="${active}"]`) as HTMLElement | null
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" })
+  }, [active])
+
   return (
     <div className="h-dvh flex flex-col bg-[#ece7df]">
 
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <header className="flex-shrink-0 border-b border-[#6a4f79] bg-[#ece7df]">
-        {/* Row 1: back + tabs */}
-        <div className="flex items-center justify-between px-5 lg:px-8 h-12">
-          <Link href="/settings" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
-            ← Settings
-          </Link>
-          <nav className="flex items-center">
-            {(["api", "mcp"] as Tab[]).map(t => (
+      <header className="flex-shrink-0 flex items-center justify-between px-5 lg:px-8 h-12 bg-[#ece7df] border-b border-[#6a4f79]">
+        <Link href="/settings" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
+          ← Settings
+        </Link>
+        <span className="font-display text-xl uppercase leading-none text-black">API & MCP Docs</span>
+        <Link href="/" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
+          App →
+        </Link>
+      </header>
+
+      {/* ── Mobile nav strip — below header, above content ──────────────── */}
+      <div
+        ref={mobileNavRef}
+        className="lg:hidden flex-shrink-0 flex overflow-x-auto border-b border-[#6a4f79] bg-[#f7f3ec] scroll-smooth"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {GROUPS.map(group => (
+          <div key={group} className="flex items-center flex-shrink-0">
+            <span className="font-display text-[10px] uppercase text-[#938d8d] tracking-widest px-3 border-r border-[#6a4f79]/20 self-stretch flex items-center">
+              {group}
+            </span>
+            {NAV.filter(n => n.group === group).map(n => (
               <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`font-display text-xl uppercase leading-none px-5 py-3 transition-colors ${tab === t ? "bg-[#fde52f] text-black border-b-4 border-[#6a4f79]" : "text-black/50 hover:text-black/80"}`}
+                key={n.id}
+                data-id={n.id}
+                onClick={() => setActive(n.id)}
+                className={`flex-shrink-0 font-display text-sm uppercase leading-none px-4 py-3 transition-colors border-b-4 ${active === n.id ? "bg-[#fde52f] text-black border-[#6a4f79]" : "text-[#423b35]/60 border-transparent hover:text-[#423b35]"}`}
               >
-                {t === "api" ? "API" : "MCP"}
+                {n.label}
               </button>
             ))}
-          </nav>
-          <Link href="/" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
-            App →
-          </Link>
-        </div>
-
-        {/* Row 2: token widget */}
-        <div className="px-5 lg:px-8 pb-4 pt-1">
-          <TokenWidget />
-        </div>
-      </header>
+          </div>
+        ))}
+      </div>
 
       {/* ── Body ────────────────────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Left nav */}
-        <aside className="hidden lg:flex flex-col w-52 flex-shrink-0 border-r border-[#6a4f79] bg-[#f7f3ec] overflow-y-auto">
-          <div className="p-4 space-y-5">
-            {Array.from(new Set(nav.map(n => n.group))).map(group => (
+        {/* ── Desktop left panel ────────────────────────────────────────── */}
+        <aside className="hidden lg:flex flex-col w-56 flex-shrink-0 border-r border-[#6a4f79] bg-[#f7f3ec] overflow-y-auto">
+          {/* Token widget */}
+          <div className="p-4 border-b border-[#6a4f79]/30">
+            <TokenWidget />
+          </div>
+
+          {/* Nav sections */}
+          <nav className="p-4 space-y-5 flex-1">
+            {GROUPS.map(group => (
               <div key={group}>
                 <p className="font-display text-[10px] uppercase text-[#938d8d] tracking-widest mb-1 px-3">{group}</p>
-                {nav.filter(n => n.group === group).map(n => (
-                  <NavLink key={n.id} id={n.id} label={n.label} active={active === n.id} />
+                {NAV.filter(n => n.group === group).map(n => (
+                  <button
+                    key={n.id}
+                    onClick={() => setActive(n.id)}
+                    className={`w-full text-left block px-3 py-1.5 font-display text-[15px] uppercase leading-none transition-colors ${active === n.id ? "bg-[#fde52f] text-black border-l-4 border-[#6a4f79]" : "text-[#423b35]/70 hover:text-[#6a4f79]"}`}
+                  >
+                    {n.label}
+                  </button>
                 ))}
               </div>
             ))}
-          </div>
+          </nav>
         </aside>
 
-        {/* Main content */}
-        <main ref={mainRef} className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-5 lg:px-10 py-10">
-            {tab === "api" ? <ApiContent /> : <McpContent apiKey={apiKey} />}
+        {/* ── Main content ──────────────────────────────────────────────── */}
+        <main className="flex-1 overflow-y-auto">
+          {/* Token widget on mobile — above content */}
+          <div className="lg:hidden px-5 pt-5 pb-2">
+            <TokenWidget />
+          </div>
+
+          <div className="max-w-3xl mx-auto px-5 lg:px-10 py-8 lg:py-10">
+            <SectionContent id={active} apiKey={apiKey} />
           </div>
         </main>
       </div>
