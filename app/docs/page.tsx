@@ -82,8 +82,10 @@ function Label({ children }: { children: React.ReactNode }) {
 // ─── Token widget ─────────────────────────────────────────────────────────────
 
 function TokenWidget() {
-  const [apiKey, setApiKey] = useState<string | null>(null)
-  const [revealed, setRevealed] = useState(false)
+  // `masked`   — display string from server: "hyd_2a60••••••••••••••••••••••••••••••••••••••••••••••"
+  // `newToken` — plaintext token shown ONCE right after regeneration, then cleared
+  const [masked, setMasked] = useState<string | null>(null)
+  const [newToken, setNewToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [regenerating, setRegenerating] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -94,18 +96,30 @@ function TokenWidget() {
       if (!session) { setLoading(false); return }
       setLoggedIn(true)
       const res = await fetch("/api/v1/token", { headers: { Authorization: `Bearer ${session.access_token}` } })
-      if (res.ok) setApiKey((await res.json()).api_key)
+      if (res.ok) setMasked((await res.json()).masked)
       setLoading(false)
     })
   }, [])
 
   async function regenerate() {
+    if (!confirm("Regenerating will immediately invalidate your current token. Continue?")) return
     setRegenerating(true)
+    setNewToken(null)
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) { setRegenerating(false); return }
     const res = await fetch("/api/v1/token", { method: "POST", headers: { Authorization: `Bearer ${session.access_token}` } })
-    if (res.ok) { setApiKey((await res.json()).api_key); setRevealed(true) }
+    if (res.ok) {
+      const json = await res.json()
+      setMasked(json.masked)
+      setNewToken(json.api_key) // shown once
+    }
     setRegenerating(false)
+  }
+
+  function copy(val: string) {
+    navigator.clipboard.writeText(val)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1800)
   }
 
   if (loading) return (
@@ -123,21 +137,55 @@ function TokenWidget() {
     </div>
   )
 
-  const display = apiKey
-    ? revealed ? apiKey : `${apiKey.slice(0, 12)}${"•".repeat(32)}`
-    : "—"
-
   return (
     <div className="border border-[#6a4f79]/30 bg-[#f7f3ec] px-4 py-3 space-y-2">
       <p className="font-display text-xs uppercase text-[#6a4f79] tracking-widest">Personal Token</p>
-      <code className="block font-mono text-xs bg-[#14121f] text-[#e2e8f0] px-3 py-2 border border-[#6a4f79]/40 break-all leading-relaxed">
-        {display}
-      </code>
-      <div className="flex items-center gap-1.5">
-        <button onClick={() => setRevealed(r => !r)} className="flex-1 font-display text-[11px] uppercase py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors">{revealed ? "Hide" : "Reveal"}</button>
-        <button onClick={() => { if (apiKey) { navigator.clipboard.writeText(apiKey); setCopied(true); setTimeout(() => setCopied(false), 1800) } }} className="flex-1 font-display text-[11px] uppercase py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors">{copied ? "Copied!" : "Copy"}</button>
-        <button onClick={regenerate} disabled={regenerating} className="flex-1 font-display text-[11px] uppercase py-1.5 bg-[#6a4f79] text-[#fde52f] border border-[#6a4f79] hover:opacity-80 transition-opacity disabled:opacity-40">{regenerating ? "…" : "Regen"}</button>
-      </div>
+
+      {/* Show new token once after regeneration */}
+      {newToken ? (
+        <div className="space-y-1.5">
+          <p className="font-display text-[10px] uppercase text-[#c0392b] tracking-wide">
+            Copy now — won&apos;t be shown again
+          </p>
+          <code className="block font-mono text-xs bg-[#14121f] text-[#fde52f] px-3 py-2 border border-[#fde52f]/40 break-all leading-relaxed">
+            {newToken}
+          </code>
+          <button
+            onClick={() => copy(newToken)}
+            className="w-full font-display text-[11px] uppercase py-1.5 bg-[#fde52f] text-black border border-[#6a4f79] hover:opacity-80 transition-opacity"
+          >
+            {copied ? "Copied!" : "Copy token"}
+          </button>
+          <button
+            onClick={() => setNewToken(null)}
+            className="w-full font-display text-[10px] uppercase py-1 text-[#938d8d] hover:text-[#6a4f79] transition-colors"
+          >
+            I&apos;ve saved it — dismiss
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <code className="block font-mono text-xs bg-[#14121f] text-[#e2e8f0] px-3 py-2 border border-[#6a4f79]/40 break-all leading-relaxed">
+            {masked ?? "—"}
+          </code>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => copy(masked ?? "")}
+              disabled={!masked}
+              className="flex-1 font-display text-[11px] uppercase py-1.5 border border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-[#fde52f] transition-colors disabled:opacity-30"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+            <button
+              onClick={regenerate}
+              disabled={regenerating}
+              className="flex-1 font-display text-[11px] uppercase py-1.5 bg-[#6a4f79] text-[#fde52f] border border-[#6a4f79] hover:opacity-80 transition-opacity disabled:opacity-40"
+            >
+              {regenerating ? "…" : "Regenerate"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

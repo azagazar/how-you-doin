@@ -3,7 +3,7 @@ import { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js"
 import { generateText } from "ai"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { z } from "zod"
-import { getAdminSupabase } from "@/lib/api-auth"
+import { getAdminSupabase, hashToken } from "@/lib/api-auth"
 import { getCouchStory } from "@/lib/couchStories"
 import { buildJoeySystemPrompt, needsHistoricalContext } from "@/lib/joey"
 import { JournalEntry, EnergyKey } from "@/lib/types"
@@ -238,11 +238,12 @@ const handler = createMcpHandler(
 
 const verifyToken = async (_req: Request, token?: string): Promise<AuthInfo | undefined> => {
   if (!token) return undefined
+  const hash = await hashToken(token)
   const supabase = getAdminSupabase()
   const { data } = await supabase
     .from("user_profiles")
     .select("user_id, lang")
-    .eq("api_key", token)
+    .eq("api_key", hash)
     .maybeSingle()
   if (!data) return undefined
   return {
