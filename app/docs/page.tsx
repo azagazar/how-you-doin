@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
+import { BottomNav } from "@/components/BottomNav"
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
@@ -319,12 +320,13 @@ function SectionContent({ id, apiKey }: { id: string; apiKey: string | null }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function DocsPage() {
-  const [active, setActive] = useState("authentication")
-  const [apiKey, setApiKey] = useState<string | null>(null)
-  const mobileNavRef = useRef<HTMLDivElement>(null)
+type MobileTab = "API" | "MCP"
 
-  // Load API key for examples
+export default function DocsPage() {
+  const [active, setActive] = useState("authentication")   // desktop
+  const [mobileTab, setMobileTab] = useState<MobileTab>("API") // mobile
+  const [apiKey, setApiKey] = useState<string | null>(null)
+
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return
@@ -333,17 +335,15 @@ export default function DocsPage() {
     })
   }, [])
 
-  // Scroll active mobile tab into view
-  useEffect(() => {
-    const el = mobileNavRef.current?.querySelector(`[data-id="${active}"]`) as HTMLElement | null
-    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" })
-  }, [active])
+  const mobileSections = NAV.filter(n =>
+    mobileTab === "API" ? n.group !== "MCP" : n.group === "MCP"
+  )
 
   return (
     <div className="h-dvh flex flex-col bg-[#ece7df]">
 
-      {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <header className="flex-shrink-0 flex items-center justify-between px-5 lg:px-8 h-12 bg-[#ece7df] border-b border-[#6a4f79]">
+      {/* ── Top bar — desktop only ───────────────────────────────────── */}
+      <header className="hidden lg:flex flex-shrink-0 items-center justify-between px-8 h-12 bg-[#ece7df] border-b border-[#6a4f79]">
         <Link href="/settings" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
           ← Settings
         </Link>
@@ -353,28 +353,16 @@ export default function DocsPage() {
         </Link>
       </header>
 
-      {/* ── Mobile nav strip — below header, above content ──────────────── */}
-      <div
-        ref={mobileNavRef}
-        className="lg:hidden flex-shrink-0 flex overflow-x-auto border-b border-[#6a4f79] bg-[#f7f3ec] scroll-smooth"
-        style={{ scrollbarWidth: "none" }}
-      >
-        {GROUPS.map(group => (
-          <div key={group} className="flex items-center flex-shrink-0">
-            <span className="font-display text-[10px] uppercase text-[#938d8d] tracking-widest px-3 border-r border-[#6a4f79]/20 self-stretch flex items-center">
-              {group}
-            </span>
-            {NAV.filter(n => n.group === group).map(n => (
-              <button
-                key={n.id}
-                data-id={n.id}
-                onClick={() => setActive(n.id)}
-                className={`flex-shrink-0 font-display text-sm uppercase leading-none px-4 py-3 transition-colors border-b-4 ${active === n.id ? "bg-[#fde52f] text-black border-[#6a4f79]" : "text-[#423b35]/60 border-transparent hover:text-[#423b35]"}`}
-              >
-                {n.label}
-              </button>
-            ))}
-          </div>
+      {/* ── Mobile: API / MCP tabs — below header ───────────────────────── */}
+      <div className="lg:hidden flex-shrink-0 flex border-b border-[#6a4f79] bg-[#f7f3ec]">
+        {(["API", "MCP"] as MobileTab[]).map(t => (
+          <button
+            key={t}
+            onClick={() => setMobileTab(t)}
+            className={`flex-1 font-display text-xl uppercase leading-none py-3 transition-colors border-b-4 ${mobileTab === t ? "bg-[#fde52f] text-black border-[#6a4f79]" : "text-[#423b35]/50 border-transparent hover:text-[#423b35]"}`}
+          >
+            {t}
+          </button>
         ))}
       </div>
 
@@ -383,12 +371,9 @@ export default function DocsPage() {
 
         {/* ── Desktop left panel ────────────────────────────────────────── */}
         <aside className="hidden lg:flex flex-col w-56 flex-shrink-0 border-r border-[#6a4f79] bg-[#f7f3ec] overflow-y-auto">
-          {/* Token widget */}
           <div className="p-4 border-b border-[#6a4f79]/30">
             <TokenWidget />
           </div>
-
-          {/* Nav sections */}
           <nav className="p-4 space-y-5 flex-1">
             {GROUPS.map(group => (
               <div key={group}>
@@ -409,16 +394,29 @@ export default function DocsPage() {
 
         {/* ── Main content ──────────────────────────────────────────────── */}
         <main className="flex-1 overflow-y-auto">
-          {/* Token widget on mobile — above content */}
-          <div className="lg:hidden px-5 pt-5 pb-2">
-            <TokenWidget />
+
+          {/* Mobile: token widget + all sections for selected tab */}
+          <div className="lg:hidden">
+            <div className="px-5 pt-5 pb-2">
+              <TokenWidget />
+            </div>
+            <div className="px-5 py-8 pb-28 space-y-16">
+              {mobileSections.map(n => (
+                <SectionContent key={n.id} id={n.id} apiKey={apiKey} />
+              ))}
+            </div>
           </div>
 
-          <div className="max-w-3xl mx-auto px-5 lg:px-10 py-8 lg:py-10">
+          {/* Desktop: single selected section */}
+          <div className="hidden lg:block max-w-3xl mx-auto px-10 py-10">
             <SectionContent id={active} apiKey={apiKey} />
           </div>
+
         </main>
       </div>
+
+      {/* ── Bottom nav — mobile only ─────────────────────────────────── */}
+      <BottomNav />
     </div>
   )
 }
