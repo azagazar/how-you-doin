@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { BottomNav } from "@/components/BottomNav"
+import { DesktopNav } from "@/components/DesktopNav"
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
@@ -342,16 +343,7 @@ export default function DocsPage() {
   return (
     <div className="h-dvh flex flex-col bg-[#ece7df]">
 
-      {/* ── Top bar — desktop only ───────────────────────────────────── */}
-      <header className="hidden lg:flex flex-shrink-0 items-center justify-between px-8 h-12 bg-[#ece7df] border-b border-[#6a4f79]">
-        <Link href="/settings" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
-          ← Settings
-        </Link>
-        <span className="font-display text-xl uppercase leading-none text-black">API & MCP Docs</span>
-        <Link href="/" className="font-display text-lg uppercase leading-none text-[#6a4f79] hover:opacity-70 transition-opacity">
-          App →
-        </Link>
-      </header>
+      <DesktopNav />
 
       {/* ── Mobile: API / MCP tabs — below header ───────────────────────── */}
       <div className="lg:hidden flex-shrink-0 flex border-b border-[#6a4f79] bg-[#f7f3ec]">
