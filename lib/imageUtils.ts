@@ -12,10 +12,15 @@ export function isHeic(file: File): boolean {
 
 export async function convertHeicIfNeeded(file: File): Promise<File> {
   if (!isHeic(file)) return file
-  const heic2any = (await import("heic2any")).default
-  const result = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.9 })
-  const blob = Array.isArray(result) ? result[0] : result
-  return new File([blob], file.name.replace(/\.heic?$/i, ".jpg"), { type: "image/jpeg" })
+  try {
+    const heic2any = (await import("heic2any")).default
+    const result = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.9 })
+    const blob = Array.isArray(result) ? result[0] : result
+    return new File([blob], file.name.replace(/\.(heic|heif)$/i, ".jpg"), { type: "image/jpeg" })
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : JSON.stringify(err)
+    throw new Error(`HEIC conversion failed: ${detail}`)
+  }
 }
 
 export function getImageOrientation(width: number, height: number): ImageOrientation {
