@@ -189,7 +189,7 @@ export function EntryDetail({ id, onDelete }: Props) {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/jpg,image/png,image/webp"
+        accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
         className="hidden"
         onChange={handlePhotoSelected}
         aria-hidden="true"

@@ -1,6 +1,23 @@
 // client-only: uses Canvas API and URL.createObjectURL
 export type ImageOrientation = "portrait" | "landscape"
 
+export function isHeic(file: File): boolean {
+  return (
+    file.type === "image/heic" ||
+    file.type === "image/heif" ||
+    file.name.toLowerCase().endsWith(".heic") ||
+    file.name.toLowerCase().endsWith(".heif")
+  )
+}
+
+export async function convertHeicIfNeeded(file: File): Promise<File> {
+  if (!isHeic(file)) return file
+  const heic2any = (await import("heic2any")).default
+  const result = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.9 })
+  const blob = Array.isArray(result) ? result[0] : result
+  return new File([blob], file.name.replace(/\.heic?$/i, ".jpg"), { type: "image/jpeg" })
+}
+
 export function getImageOrientation(width: number, height: number): ImageOrientation {
   return height >= width ? "portrait" : "landscape"
 }

@@ -1,7 +1,7 @@
 import { supabase } from "./supabase"
-import { resizeImage, getImageOrientation, ImageOrientation } from "./imageUtils"
+import { resizeImage, getImageOrientation, convertHeicIfNeeded, ImageOrientation } from "./imageUtils"
 
-const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"]
 
 export class PhotoError extends Error {
   constructor(message: string) {
@@ -20,11 +20,12 @@ export async function uploadPhoto(
   file: File,
   date: string
 ): Promise<{ url: string; orientation: ImageOrientation }> {
-  if (!ALLOWED_TYPES.includes(file.type.toLowerCase())) {
-    throw new PhotoError("Unsupported format. Please use JPG, PNG, or WebP.")
+  if (!ALLOWED_TYPES.includes(file.type.toLowerCase()) && !file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+    throw new PhotoError("Unsupported format. Please use JPG, PNG, WebP, or HEIC.")
   }
 
-  const { blob, width, height } = await resizeImage(file, 1600)
+  const converted = await convertHeicIfNeeded(file)
+  const { blob, width, height } = await resizeImage(converted, 1600)
   const orientation = getImageOrientation(width, height)
 
   const accessToken = await getAccessToken()
