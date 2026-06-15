@@ -25,6 +25,7 @@ type DbRow = {
   secondary_energy: string | null
   content: string
   created_at: string
+  photo_url: string | null
 }
 
 function toEntry(row: DbRow): JournalEntry {
@@ -35,6 +36,7 @@ function toEntry(row: DbRow): JournalEntry {
     secondaryEnergy: (row.secondary_energy as JournalEntry["secondaryEnergy"]) ?? undefined,
     content: row.content,
     createdAt: row.created_at,
+    photoUrl: row.photo_url ?? undefined,
   }
 }
 
@@ -46,7 +48,7 @@ export async function getEntries(): Promise<JournalEntry[]> {
   const { data, error } = await supabase
     .from("journal_entries")
     .select("*")
-    .order("created_at", { ascending: false })
+    .order("date", { ascending: false })
 
   if (error) {
     console.error("getEntries error:", error)

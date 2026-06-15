@@ -4,7 +4,6 @@ import { useRef, useEffect, useState, FormEvent } from "react"
 import { JournalEntry } from "@/lib/types"
 import { Lang } from "@/lib/i18n"
 import { getEntries } from "@/lib/storage"
-import { needsHistoricalContext } from "@/lib/joey"
 
 type Message = {
   id: string
@@ -52,7 +51,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
   async function getRecentEntries(): Promise<JournalEntry[]> {
     if (cachedEntries.current !== null) return cachedEntries.current
     const all = await getEntries()
-    const recent = all.slice(0, 10)
+    const recent = all.slice(0, 20)
     cachedEntries.current = recent
     return recent
   }
@@ -68,10 +67,7 @@ export function JoeyChat({ currentEntry, lang, onClose }: Props) {
     const assistantId = makeId()
     setMessages([...history, { id: assistantId, role: "assistant", content: "" }])
 
-    // Only fetch historical entries when the question needs them
-    const recentEntries = needsHistoricalContext(userInput)
-      ? await getRecentEntries()
-      : []
+    const recentEntries = await getRecentEntries()
 
     try {
       const res = await fetch("/api/joey", {

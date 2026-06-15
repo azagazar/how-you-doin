@@ -13,12 +13,25 @@ const HISTORY_KEYWORDS = [
   "always", "often", "usually", "frequently", "trend", "trends",
   "over time", "all my", "summarize", "summary", "notice",
   "overall", "compare", "how many", "how often", "most common", "track",
-  // PL
+  "yesterday", "day before", "earlier",
+  // PL — base forms
   "wzorzec", "wzorce", "ostatnio", "niedawno", "ostatni tydzień",
   "ostatni miesiąc", "ten miesiąc", "zawsze", "często", "zazwyczaj",
   "tendencja", "historia", "podsumuj", "podsumowanie",
   "ogólnie", "porównaj", "jak często", "ile razy", "najczęściej",
   "tydzień", "miesiąc", "postęp",
+  // PL — declined forms of "tydzień" (week)
+  "tygodniu", "tygodnia", "tygodnie", "tygodni", "tygodniach",
+  // PL — "zeszły/zeszła/zeszłe" (last/past)
+  "zeszłym", "zeszłego", "zeszłej", "zeszłe", "zeszły", "zeszłych",
+  "zeszłą",
+  // PL — "poprzedni" (previous)
+  "poprzednim", "poprzedniego", "poprzedniej", "poprzednie", "poprzedni",
+  // PL — "miniony" (past/elapsed)
+  "minionego", "miniony", "minionej", "minione",
+  // PL — other temporal
+  "wczoraj", "wczorajszy", "wczorajszego", "dawniej", "kiedyś",
+  "jakiś czas", "jakiegoś czasu",
 ]
 
 export function needsHistoricalContext(message: string): boolean {
@@ -29,7 +42,8 @@ export function needsHistoricalContext(message: string): boolean {
 export function buildJoeySystemPrompt(
   currentEntry: JournalEntry | null,
   recentEntries: JournalEntry[],
-  lang: "en" | "pl"
+  lang: "en" | "pl",
+  historyLabel?: string
 ): string {
   const langInstruction =
     lang === "pl"
@@ -45,7 +59,7 @@ export function buildJoeySystemPrompt(
 
   const historySection =
     recentEntries.length > 0
-      ? `\nRecent entries (${recentEntries.length}, newest first):\n` +
+      ? `\n${historyLabel ?? `Recent entries (${recentEntries.length}, newest first)`}:\n` +
         recentEntries
           .map((e) => {
             const energies =

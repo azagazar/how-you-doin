@@ -2,6 +2,7 @@ import { generateText } from "ai"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { getUserFromApiKey, unauthorized, getAdminSupabase } from "@/lib/api-auth"
 import { buildJoeySystemPrompt, needsHistoricalContext } from "@/lib/joey"
+import { hybridSearch } from "@/lib/search"
 import { JournalEntry } from "@/lib/types"
 
 export const runtime = "nodejs"
@@ -58,20 +59,44 @@ export async function POST(req: Request) {
 
   const currentEntry: JournalEntry | null = entryRow ? toJournalEntry(entryRow) : null
 
-  // Fetch recent entries only when needed
+  // Fetch relevant entries when history is needed
   let recentEntries: JournalEntry[] = []
+  let usedHybridSearch = false
+
   if (wantsHistory) {
-    const { data: rows } = await supabase
-      .from("journal_entries")
-      .select("id, date, primary_energy, secondary_energy, content, created_at")
-      .eq("user_id", user.user_id)
-      .neq("date", targetDate)
-      .order("date", { ascending: false })
-      .limit(10)
-    recentEntries = (rows ?? []).map(toJournalEntry)
+    try {
+      const results = await hybridSearch(supabase, user.user_id, body.message)
+      // Exclude the current entry (already shown separately)
+      recentEntries = results
+        .filter((r) => r.date !== targetDate)
+        .map((r) => ({
+          id: r.id,
+          date: r.date,
+          primaryEnergy: (r.primary_energy as JournalEntry["primaryEnergy"]) ?? undefined,
+          secondaryEnergy: (r.secondary_energy as JournalEntry["secondaryEnergy"]) ?? undefined,
+          content: r.content,
+          createdAt: "",
+        }))
+      usedHybridSearch = true
+    } catch {
+      // Fall back to simple recent entries if hybrid search fails
+      const { data: rows } = await supabase
+        .from("journal_entries")
+        .select("id, date, primary_energy, secondary_energy, content, created_at")
+        .eq("user_id", user.user_id)
+        .neq("date", targetDate)
+        .order("date", { ascending: false })
+        .limit(10)
+      recentEntries = (rows ?? []).map(toJournalEntry)
+    }
   }
 
-  const system = buildJoeySystemPrompt(currentEntry, recentEntries, user.lang)
+  const system = buildJoeySystemPrompt(
+    currentEntry,
+    recentEntries,
+    user.lang,
+    usedHybridSearch ? "Relevant journal entries (semantic + keyword search):" : undefined
+  )
 
   const { text } = await generateText({
     model: anthropic("claude-haiku-4-5"),
@@ -85,6 +110,7 @@ export async function POST(req: Request) {
     context: {
       date: targetDate,
       used_history: wantsHistory,
+      used_hybrid_search: usedHybridSearch,
       entries_loaded: recentEntries.length + (currentEntry ? 1 : 0),
     },
   })

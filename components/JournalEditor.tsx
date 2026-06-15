@@ -37,6 +37,7 @@ type Props = {
   content: string
   onChange: (html: string) => void
   placeholder?: string
+  onCameraClick?: () => void
 }
 
 type VoiceState = "idle" | "listening" | "error"
@@ -50,7 +51,7 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionCtor | null {
   }
 }
 
-export function JournalEditor({ content, onChange, placeholder }: Props) {
+export function JournalEditor({ content, onChange, placeholder, onCameraClick }: Props) {
   const { lang, t } = useI18n()
 
   const editor = useEditor({
@@ -180,25 +181,69 @@ export function JournalEditor({ content, onChange, placeholder }: Props) {
               {voiceState === "listening" ? t("voice.listening") : errorMsg || " "}
             </span>
 
-            <button
-              type="button"
-              onClick={voiceState === "listening" ? stopListening : startListening}
-              disabled={voiceState === "error"}
-              aria-label={voiceState === "listening" ? t("voice.stop") : t("voice.start")}
-              className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors touch-manipulation ${
-                voiceState === "listening"
-                  ? "bg-red-500 border-red-500 text-white"
-                  : "border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-white active:bg-[#6a4f79] active:text-white"
-              }`}
-            >
-              {voiceState === "listening" ? <StopIcon /> : <MicIcon />}
-            </button>
+            <div className="flex items-center gap-2">
+              {onCameraClick && (
+                <button
+                  type="button"
+                  onClick={onCameraClick}
+                  aria-label="Add photo"
+                  className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-white active:bg-[#6a4f79] active:text-white transition-colors touch-manipulation"
+                >
+                  <CameraIcon />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={voiceState === "listening" ? stopListening : startListening}
+                disabled={voiceState === "error"}
+                aria-label={voiceState === "listening" ? t("voice.stop") : t("voice.start")}
+                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors touch-manipulation ${
+                  voiceState === "listening"
+                    ? "bg-red-500 border-red-500 text-white"
+                    : "border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-white active:bg-[#6a4f79] active:text-white"
+                }`}
+              >
+                {voiceState === "listening" ? <StopIcon /> : <MicIcon />}
+              </button>
+            </div>
           </>
         ) : (
-          <p className="font-serif text-xs text-gray-400 italic">{t("voice.notSupported")}</p>
+          <div className="flex items-center justify-between w-full">
+            <p className="font-serif text-xs text-gray-400 italic">{t("voice.notSupported")}</p>
+            {onCameraClick && (
+              <button
+                type="button"
+                onClick={onCameraClick}
+                aria-label="Add photo"
+                className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-[#6a4f79] text-[#6a4f79] hover:bg-[#6a4f79] hover:text-white active:bg-[#6a4f79] active:text-white transition-colors touch-manipulation"
+              >
+                <CameraIcon />
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
+  )
+}
+
+function CameraIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </svg>
   )
 }
 

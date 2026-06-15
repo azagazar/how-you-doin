@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { getEntries, saveEntry, deleteEntry } from "@/lib/storage"
 import { JournalEntry, EnergyKey } from "@/lib/types"
@@ -11,6 +11,9 @@ import { EnergyCard } from "@/components/EnergyCard"
 import { EnergyBadge } from "@/components/EnergyBadge"
 import { CouchStoryBlock } from "@/components/CouchStoryBlock"
 import { JournalEditor } from "@/components/JournalEditor"
+import { SnapshotFrame } from "@/components/SnapshotFrame"
+import { uploadPhoto, deletePhoto } from "@/lib/photoStorage"
+import { isDemoMode } from "@/lib/demo"
 
 function formatDate(dateStr: string, lang: string): string {
   const d = new Date(dateStr + "T12:00:00")
@@ -37,6 +40,11 @@ export function EntryDetail({ id, onDelete }: Props) {
   const [content, setContent] = useState("")
   const [saved, setSaved] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [frameVisible, setFrameVisible] = useState(false)
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>()
+  const [photoLoading, setPhotoLoading] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     async function load() {
@@ -54,6 +62,11 @@ export function EntryDetail({ id, onDelete }: Props) {
       setPrimaryEnergy(found.primaryEnergy)
       setSecondaryEnergy(found.secondaryEnergy)
       setContent(found.content)
+      if (found.photoUrl) {
+        setPhotoUrl(found.photoUrl)
+        setFrameVisible(true)
+      }
+      setPhotoError(null)
     }
     load()
   }, [id, router, onDelete])
@@ -92,6 +105,50 @@ export function EntryDetail({ id, onDelete }: Props) {
     else router.replace("/history")
   }
 
+  function handleCameraClick() {
+    fileInputRef.current?.click()
+  }
+
+  async function handlePhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!entry) return
+    const file = e.target.files?.[0]
+    if (!fileInputRef.current) return
+    fileInputRef.current.value = ""
+    if (!file) return
+
+    if (isDemoMode()) {
+      setPhotoError("Photo uploads require signing in with Google.")
+      return
+    }
+
+    setPhotoError(null)
+    setPhotoLoading(true)
+    setFrameVisible(true)
+    try {
+      const { url } = await uploadPhoto(file, entry.date)
+      setPhotoUrl(url)
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : "Upload failed")
+      setFrameVisible(false)
+    } finally {
+      setPhotoLoading(false)
+    }
+  }
+
+  async function handlePhotoDelete() {
+    if (!entry) return
+    setPhotoLoading(true)
+    try {
+      await deletePhoto(entry.date)
+      setPhotoUrl(undefined)
+      setFrameVisible(false)
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : "Delete failed")
+    } finally {
+      setPhotoLoading(false)
+    }
+  }
+
   if (!entry) return null
 
   const viewStory = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy, lang)
@@ -113,6 +170,30 @@ export function EntryDetail({ id, onDelete }: Props) {
         </p>
         <h1 className="font-display text-5xl text-black uppercase leading-none">{t("entryDetail.title")}</h1>
       </div>
+
+      {/* Snapshot — appears on first camera click, stays as placeholder after delete */}
+      {frameVisible && (
+        <div className="w-4/5 mx-auto">
+          <SnapshotFrame
+            photoUrl={photoUrl}
+            onAdd={handleCameraClick}
+            onDelete={handlePhotoDelete}
+            loading={photoLoading}
+            label="SNAPSHOT"
+          />
+        </div>
+      )}
+      {photoError && (
+        <p className="font-serif text-sm text-red-500 text-center">{photoError}</p>
+      )}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg,image/png,image/webp"
+        className="hidden"
+        onChange={handlePhotoSelected}
+        aria-hidden="true"
+      />
 
       {editing ? (
         <div className="space-y-4">

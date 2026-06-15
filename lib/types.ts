@@ -7,4 +7,5 @@ export type JournalEntry = {
   secondaryEnergy?: EnergyKey
   content: string
   createdAt: string
+  photoUrl?: string
 }

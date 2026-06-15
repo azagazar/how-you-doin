@@ -2,12 +2,13 @@
 
 export const dynamic = "force-dynamic"
 
-import { useEffect, useState, useCallback, useMemo } from "react"
+import { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
 import { isDemoMode } from "@/lib/demo"
 import { EnergyKey } from "@/lib/types"
+import { uploadPhoto, deletePhoto } from "@/lib/photoStorage"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
 import { getCouchStory } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
@@ -15,6 +16,7 @@ import { EnergyCard } from "@/components/EnergyCard"
 import { CouchSelector } from "@/components/CouchSelector"
 import { CouchStoryBlock } from "@/components/CouchStoryBlock"
 import { JournalEditor } from "@/components/JournalEditor"
+import { SnapshotFrame } from "@/components/SnapshotFrame"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
 import { ChemexLoaderScreen } from "@/components/ChemexLoader"
@@ -43,6 +45,11 @@ export default function CheckInPage() {
   const [appReady, setAppReady] = useState(false)
 
   const [joeyOpen, setJoeyOpen] = useState(false)
+  const [frameVisible, setFrameVisible] = useState(false)
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>()
+  const [photoLoading, setPhotoLoading] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [prompt] = useState(() => {
     const opts = ["home.journalPlaceholders.0", "home.journalPlaceholders.1", "home.journalPlaceholders.2", "home.journalPlaceholders.3"]
@@ -76,6 +83,10 @@ export default function CheckInPage() {
         setPrimaryEnergy(existing.primaryEnergy)
         setSecondaryEnergy(existing.secondaryEnergy)
         setExistingId(existing.id)
+        if (existing.photoUrl) {
+          setPhotoUrl(existing.photoUrl)
+          setFrameVisible(true)
+        }
       }
     }
 
@@ -115,6 +126,56 @@ export default function CheckInPage() {
   }
 
   const couchStory = getCouchStory(primaryEnergy, secondaryEnergy, lang)
+
+  function handleCameraClick() {
+    fileInputRef.current?.click()
+  }
+
+  async function handlePhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!fileInputRef.current) return
+    fileInputRef.current.value = ""
+    if (!file) return
+
+    if (isDemoMode()) {
+      setPhotoError("Photo uploads require signing in with Google.")
+      return
+    }
+
+    setPhotoError(null)
+    setPhotoLoading(true)
+    setFrameVisible(true)
+    try {
+      const today = getTodayDate()
+      // Ensure the entry exists before attaching a photo
+      if (!existingId) {
+        const id = crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36)
+        await saveEntry({ id, date: today, primaryEnergy, secondaryEnergy, content, createdAt: new Date().toISOString() })
+        setExistingId(id)
+      }
+      const { url } = await uploadPhoto(file, today)
+      setPhotoUrl(url)
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : "Upload failed")
+      setFrameVisible(false)
+    } finally {
+      setPhotoLoading(false)
+    }
+  }
+
+  async function handlePhotoDelete() {
+    const today = getTodayDate()
+    setPhotoLoading(true)
+    try {
+      await deletePhoto(today)
+      setPhotoUrl(undefined)
+      setFrameVisible(false)
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : "Delete failed")
+    } finally {
+      setPhotoLoading(false)
+    }
+  }
 
   // Derive currentEntry reactively so Joey always sees the latest state
   const currentEntryForJoey = useMemo(() => {
@@ -190,6 +251,21 @@ export default function CheckInPage() {
           {/* Couch story + reflection */}
           <CouchStoryBlock story={couchStory} />
 
+          {/* Snapshot section — appears on first camera click, stays after delete */}
+          {frameVisible && (
+            <div className="w-4/5 mx-auto">
+              <SnapshotFrame
+                photoUrl={photoUrl}
+                onAdd={handleCameraClick}
+                onDelete={handlePhotoDelete}
+                loading={photoLoading}
+              />
+            </div>
+          )}
+          {photoError && (
+            <p className="font-serif text-sm text-red-500 text-center">{photoError}</p>
+          )}
+
           {/* Journal section */}
           <div className="space-y-2">
             <p className="font-display text-2xl text-black uppercase">
@@ -199,6 +275,7 @@ export default function CheckInPage() {
               content={content}
               onChange={(html) => { setContent(html); setSaved(false) }}
               placeholder={t(prompt)}
+              onCameraClick={handleCameraClick}
             />
           </div>
 
@@ -250,6 +327,15 @@ export default function CheckInPage() {
           onClose={() => setJoeyOpen(false)}
         />
       )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg,image/png,image/webp"
+        className="hidden"
+        onChange={handlePhotoSelected}
+        aria-hidden="true"
+      />
     </div>
   )
 }
