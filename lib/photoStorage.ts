@@ -1,5 +1,5 @@
 import { supabase } from "./supabase"
-import { resizeImage, getImageOrientation, convertHeicIfNeeded, ImageOrientation } from "./imageUtils"
+import { resizeImage, isHeic } from "./imageUtils"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"]
 
@@ -19,20 +19,23 @@ async function getAccessToken(): Promise<string> {
 export async function uploadPhoto(
   file: File,
   date: string
-): Promise<{ url: string; orientation: ImageOrientation }> {
-  if (!ALLOWED_TYPES.includes(file.type.toLowerCase()) && !file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+): Promise<{ url: string }> {
+  if (!ALLOWED_TYPES.includes(file.type.toLowerCase()) && !isHeic(file)) {
     throw new PhotoError("Unsupported format. Please use JPG, PNG, WebP, or HEIC.")
   }
 
-  const converted = await convertHeicIfNeeded(file)
-  const { blob, width, height } = await resizeImage(converted, 1600)
-  const orientation = getImageOrientation(width, height)
-
   const accessToken = await getAccessToken()
-
   const formData = new FormData()
-  formData.append("file", new File([blob], `${date}.jpg`, { type: "image/jpeg" }))
-  formData.append("date", date)
+
+  if (isHeic(file)) {
+    // HEIC can't be decoded client-side — send raw to server for sips conversion
+    formData.append("file", file)
+    formData.append("date", date)
+  } else {
+    const { blob } = await resizeImage(file, 1600)
+    formData.append("file", new File([blob], `${date}.jpg`, { type: "image/jpeg" }))
+    formData.append("date", date)
+  }
 
   const res = await fetch("/api/v1/photo", {
     method: "POST",
@@ -46,7 +49,7 @@ export async function uploadPhoto(
   }
 
   const { url } = await res.json() as { url: string }
-  return { url, orientation }
+  return { url }
 }
 
 export async function deletePhoto(date: string): Promise<void> {

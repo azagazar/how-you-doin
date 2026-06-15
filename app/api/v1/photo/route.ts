@@ -1,8 +1,36 @@
+import { execSync } from "child_process"
+import { writeFileSync, readFileSync, unlinkSync } from "fs"
+import { tmpdir } from "os"
+import { join } from "path"
 import { getAdminSupabase } from "@/lib/api-auth"
 
 export const runtime = "nodejs"
 
 const BUCKET = "journal-photos"
+
+function isHeicBuffer(filename: string, contentType: string): boolean {
+  const name = filename.toLowerCase()
+  return name.endsWith(".heic") || name.endsWith(".heif") ||
+    contentType === "image/heic" || contentType === "image/heif"
+}
+
+function convertHeicToJpeg(input: Buffer): Buffer {
+  if (process.platform !== "darwin") {
+    throw new Error("HEIC uploads require macOS. Please convert to JPEG before uploading.")
+  }
+  const ts = Date.now()
+  const inPath = join(tmpdir(), `hyd_${ts}.heic`)
+  const outPath = join(tmpdir(), `hyd_${ts}.jpg`)
+  try {
+    writeFileSync(inPath, input)
+    // -Z 1600: fit within 1600px on longest side; -s format jpeg: output JPEG
+    execSync(`sips -s format jpeg -Z 1600 "${inPath}" --out "${outPath}"`, { stdio: "ignore" })
+    return readFileSync(outPath)
+  } finally {
+    try { unlinkSync(inPath) } catch { /* ignore */ }
+    try { unlinkSync(outPath) } catch { /* ignore */ }
+  }
+}
 
 async function getUserFromToken(req: Request) {
   const accessToken = req.headers.get("Authorization")?.replace("Bearer ", "").trim()
@@ -28,14 +56,23 @@ export async function POST(req: Request) {
 
   if (!file || !date) return Response.json({ error: "Missing file or date" }, { status: 400 })
 
-  const bytes = await file.arrayBuffer()
+  let imageBuffer = Buffer.from(await file.arrayBuffer())
+
+  if (isHeicBuffer(file.name, file.type)) {
+    try {
+      imageBuffer = convertHeicToJpeg(imageBuffer)
+    } catch (err) {
+      return Response.json({ error: err instanceof Error ? err.message : "HEIC conversion failed" }, { status: 415 })
+    }
+  }
+
   const path = `${user.id}/${date}.jpg`
 
   const admin = getAdminSupabase()
 
   const { error: uploadError } = await admin.storage
     .from(BUCKET)
-    .upload(path, Buffer.from(bytes), { contentType: "image/jpeg", upsert: true })
+    .upload(path, imageBuffer, { contentType: "image/jpeg", upsert: true })
 
   if (uploadError) return Response.json({ error: uploadError.message }, { status: 500 })
 

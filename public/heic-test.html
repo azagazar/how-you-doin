@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><title>HEIC test</title></head>
+<body>
+<h2>HEIC conversion test</h2>
+<input type="file" id="f" accept=".heic,.heif,image/heic,image/heif">
+<pre id="log"></pre>
+<img id="preview" style="max-width:300px;margin-top:12px">
+<script>
+const log = s => { document.getElementById('log').textContent += s + '\n'; console.log(s); };
+
+document.getElementById('f').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  log('file: ' + file.name + ' type: ' + file.type + ' size: ' + file.size);
+
+  // Test 1: createImageBitmap
+  log('--- Test 1: createImageBitmap ---');
+  try {
+    const bitmap = await createImageBitmap(file);
+    log('OK: ' + bitmap.width + 'x' + bitmap.height);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.getContext('2d').drawImage(bitmap, 0, 0);
+    bitmap.close();
+    const blob = await new Promise((res, rej) =>
+      canvas.toBlob(b => b ? res(b) : rej('toBlob null'), 'image/jpeg', 0.9)
+    );
+    log('JPEG blob: ' + blob.size + ' bytes');
+    document.getElementById('preview').src = URL.createObjectURL(blob);
+  } catch(err) {
+    log('FAIL: ' + (err?.message ?? JSON.stringify(err)));
+  }
+
+  // Test 2: new Image()
+  log('--- Test 2: new Image() ---');
+  try {
+    const url = URL.createObjectURL(file);
+    await new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => { log('OK: ' + img.naturalWidth + 'x' + img.naturalHeight); res(); };
+      img.onerror = (e) => { log('FAIL: onerror'); rej(e); };
+      img.src = url;
+    });
+  } catch(err) {
+    log('FAIL: ' + (err?.message ?? 'error'));
+  }
+});
+</script>
+</body>
+</html>
