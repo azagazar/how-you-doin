@@ -4,6 +4,7 @@ import { generateText } from "ai"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { z } from "zod"
 import { getAdminSupabase, hashToken } from "@/lib/api-auth"
+import { hybridSearch } from "@/lib/search"
 import { getCouchStory } from "@/lib/couchStories"
 import { buildJoeySystemPrompt, needsHistoricalContext } from "@/lib/joey"
 import { JournalEntry, EnergyKey } from "@/lib/types"
@@ -196,13 +197,30 @@ const handler = createMcpHandler(
         const currentEntry = entryRow ? toEntry(entryRow) : null
 
         let recentEntries: JournalEntry[] = []
+        let usedHybridSearch = false
+
         if (wantsHistory) {
-          const { data: rows } = await supabase
-            .from("journal_entries")
-            .select("id, date, primary_energy, secondary_energy, content, created_at")
-            .eq("user_id", userId).neq("date", targetDate)
-            .order("date", { ascending: false }).limit(10)
-          recentEntries = (rows ?? []).map(toEntry)
+          try {
+            const results = await hybridSearch(supabase, userId, message)
+            recentEntries = results
+              .filter((r) => r.date !== targetDate)
+              .map((r) => ({
+                id: r.id,
+                date: r.date,
+                primaryEnergy: (r.primary_energy as EnergyKey) ?? undefined,
+                secondaryEnergy: (r.secondary_energy as EnergyKey) ?? undefined,
+                content: r.content,
+                createdAt: "",
+              }))
+            usedHybridSearch = true
+          } catch {
+            const { data: rows } = await supabase
+              .from("journal_entries")
+              .select("id, date, primary_energy, secondary_energy, content, created_at")
+              .eq("user_id", userId).neq("date", targetDate)
+              .order("date", { ascending: false }).limit(10)
+            recentEntries = (rows ?? []).map(toEntry)
+          }
         }
 
         const anthropic = createAnthropic({
@@ -212,14 +230,17 @@ const handler = createMcpHandler(
 
         const { text } = await generateText({
           model: anthropic("claude-haiku-4-5"),
-          system: buildJoeySystemPrompt(currentEntry, recentEntries, lang),
+          system: buildJoeySystemPrompt(
+            currentEntry, recentEntries, lang,
+            usedHybridSearch ? "Relevant journal entries (semantic + keyword search):" : undefined
+          ),
           messages: [{ role: "user", content: message }],
           maxOutputTokens: 300,
         })
 
         return { content: [{ type: "text" as const, text: JSON.stringify({
           reply: text,
-          context: { date: targetDate, used_history: wantsHistory, entries_loaded: recentEntries.length + (currentEntry ? 1 : 0) }
+          context: { date: targetDate, used_history: wantsHistory, used_hybrid_search: usedHybridSearch, entries_loaded: recentEntries.length + (currentEntry ? 1 : 0) }
         })}]}
       }
     )

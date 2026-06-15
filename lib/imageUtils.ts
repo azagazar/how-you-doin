@@ -1,3 +1,4 @@
+// client-only: uses Canvas API and URL.createObjectURL
 export type ImageOrientation = "portrait" | "landscape"
 
 export function getImageOrientation(width: number, height: number): ImageOrientation {

@@ -72,7 +72,8 @@ export async function DELETE(req: Request) {
   const admin = getAdminSupabase()
   const path = `${user.id}/${date}.jpg`
 
-  await admin.storage.from(BUCKET).remove([path])
+  const { error: storageError } = await admin.storage.from(BUCKET).remove([path])
+  if (storageError) return Response.json({ error: storageError.message }, { status: 500 })
 
   const { error: dbError } = await admin
     .from("journal_entries")
