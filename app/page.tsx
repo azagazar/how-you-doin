@@ -61,8 +61,12 @@ export default function CheckInPage() {
     let redirect: string | null = null
 
     async function init() {
-      if (!isDemoMode()) {
-        const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (isDemoMode()) {
+        // Real Google session takes priority — clear the stale demo flag
+        if (session) setDemoMode(false)
+      } else {
         if (!session) {
           redirect = "/login"
           return
