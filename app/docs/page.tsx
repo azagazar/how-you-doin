@@ -81,7 +81,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 // ─── Token widget ─────────────────────────────────────────────────────────────
 
-function TokenWidget() {
+function TokenWidget({ onNewToken }: { onNewToken?: (token: string) => void }) {
   // `masked`   — display string from server: "hyd_2a60••••••••••••••••••••••••••••••••••••••••••••••"
   // `newToken` — plaintext token shown ONCE right after regeneration, then cleared
   const [masked, setMasked] = useState<string | null>(null)
@@ -112,6 +112,7 @@ function TokenWidget() {
       const json = await res.json()
       setMasked(json.masked)
       setNewToken(json.api_key) // shown once
+      onNewToken?.(json.api_key)
     }
     setRegenerating(false)
   }
@@ -376,14 +377,6 @@ export default function DocsPage() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("API") // mobile
   const [apiKey, setApiKey] = useState<string | null>(null)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) return
-      const res = await fetch("/api/v1/token", { headers: { Authorization: `Bearer ${session.access_token}` } })
-      if (res.ok) setApiKey((await res.json()).masked)
-    })
-  }, [])
-
   const mobileSections = NAV.filter(n =>
     mobileTab === "API" ? n.group !== "MCP" : n.group === "MCP"
   )
@@ -412,7 +405,7 @@ export default function DocsPage() {
         {/* ── Desktop left panel ────────────────────────────────────────── */}
         <aside className="hidden lg:flex flex-col w-56 flex-shrink-0 border-r border-[#6a4f79] bg-[#f7f3ec] overflow-y-auto">
           <div className="p-4 border-b border-[#6a4f79]/30">
-            <TokenWidget />
+            <TokenWidget onNewToken={setApiKey} />
           </div>
           <nav className="p-4 space-y-5 flex-1">
             {GROUPS.map(group => (
@@ -438,7 +431,7 @@ export default function DocsPage() {
           {/* Mobile: token widget + all sections for selected tab */}
           <div className="lg:hidden">
             <div className="px-5 pt-5 pb-2">
-              <TokenWidget />
+              <TokenWidget onNewToken={setApiKey} />
             </div>
             <div className="px-5 py-8 pb-28 space-y-16">
               {mobileSections.map(n => (
