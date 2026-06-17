@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
   if (!file || !date) return Response.json({ error: "Missing file or date" }, { status: 400 })
 
-  let imageBuffer = Buffer.from(await file.arrayBuffer())
+  let imageBuffer: Buffer<ArrayBufferLike> = Buffer.from(await file.arrayBuffer())
 
   if (isHeicBuffer(file.name, file.type)) {
     try {
