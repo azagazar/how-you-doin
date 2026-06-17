@@ -195,7 +195,7 @@ function TokenWidget() {
 function SectionContent({ id, apiKey }: { id: string; apiKey: string | null }) {
   const BASE = "https://how-you-doin.vercel.app"
   const token = apiKey ?? "hyd_your_token"
-  const mcpUrl = `${BASE}/api/mcp/mcp`
+  const mcpUrl = `${BASE}/api/mcp`
 
   if (id === "authentication") return (
     <div className="space-y-5">
@@ -380,7 +380,7 @@ export default function DocsPage() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return
       const res = await fetch("/api/v1/token", { headers: { Authorization: `Bearer ${session.access_token}` } })
-      if (res.ok) setApiKey((await res.json()).api_key)
+      if (res.ok) setApiKey((await res.json()).masked)
     })
   }, [])
 

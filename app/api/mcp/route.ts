@@ -1,4 +1,4 @@
-import { authHandler } from "../server"
+import { authHandler } from "./server"
 
 export const runtime = "nodejs"
 export const maxDuration = 60

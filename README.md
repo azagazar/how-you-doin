@@ -203,7 +203,7 @@ The app exposes an MCP server at `/api/mcp` for use with Claude Desktop and othe
 - `journal_list_entries` — list entries with optional date filter
 - `joey_ask` — chat with Joey from an external client
 
-Connect URL: `https://<your-domain>/api/mcp/mcp`
+Connect URL: `https://<your-domain>/api/mcp`
 
 ---
 
