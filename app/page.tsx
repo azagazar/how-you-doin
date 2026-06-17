@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
-import { isDemoMode } from "@/lib/demo"
+import { isDemoMode, setDemoMode } from "@/lib/demo"
 import { EnergyKey } from "@/lib/types"
 import { uploadPhoto, deletePhoto } from "@/lib/photoStorage"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
@@ -255,21 +255,6 @@ export default function CheckInPage() {
           {/* Couch story + reflection */}
           <CouchStoryBlock story={couchStory} />
 
-          {/* Snapshot section — appears on first camera click, stays after delete */}
-          {frameVisible && (
-            <div className="w-4/5 mx-auto">
-              <SnapshotFrame
-                photoUrl={photoUrl}
-                onAdd={handleCameraClick}
-                onDelete={handlePhotoDelete}
-                loading={photoLoading}
-              />
-            </div>
-          )}
-          {photoError && (
-            <p className="font-serif text-sm text-red-500 text-center">{photoError}</p>
-          )}
-
           {/* Journal section */}
           <div className="space-y-2">
             <p className="font-display text-2xl text-black uppercase">
@@ -281,6 +266,20 @@ export default function CheckInPage() {
               placeholder={t(prompt)}
               onCameraClick={handleCameraClick}
             />
+            {/* Snapshot frame — inside journal section, below editor */}
+            {frameVisible && (
+              <div className="w-4/5 mx-auto pt-2">
+                <SnapshotFrame
+                  photoUrl={photoUrl}
+                  onAdd={handleCameraClick}
+                  onDelete={handlePhotoDelete}
+                  loading={photoLoading}
+                />
+              </div>
+            )}
+            {photoError && (
+              <p className="font-serif text-sm text-red-500 text-center">{photoError}</p>
+            )}
           </div>
 
           {/* Save button */}

@@ -14,7 +14,7 @@ function isHeicBuffer(filename: string, contentType: string): boolean {
     contentType === "image/heic" || contentType === "image/heif"
 }
 
-function convertHeicToJpeg(input: Buffer): Buffer {
+function convertHeicToJpeg(input: Buffer<ArrayBufferLike>): Buffer<ArrayBufferLike> {
   if (process.platform !== "darwin") {
     throw new Error("HEIC uploads require macOS. Please convert to JPEG before uploading.")
   }
