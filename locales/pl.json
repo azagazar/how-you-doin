@@ -90,7 +90,13 @@
     "continueGoogle": "Kontynuuj z Google",
     "language": "Język",
     "developer": "Developer",
-    "apiDocs": "Dokumentacja API"
+    "apiDocs": "Dokumentacja API",
+    "subscription": "Twoja subskrypcja",
+    "subscriptionActive": "Wszyscy companioni odblokowi",
+    "subscriptionRenews": "Odnawia się",
+    "manageSubscription": "Zarządzaj subskrypcją",
+    "subscribe": "Odblokuj wszystkich companionów",
+    "noSubscription": "Odblokuj Monikę, Chandlera, Rossa, Febe i Rachel miesięczną subskrypcją."
   },
   "joey": {
     "buttonLabel": "Pogadaj z Joeyem",

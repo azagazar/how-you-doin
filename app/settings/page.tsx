@@ -6,9 +6,12 @@ import Link from "next/link"
 import { useI18n } from "@/lib/i18n"
 import { supabase } from "@/lib/supabase"
 import { isDemoMode, setDemoMode } from "@/lib/demo"
+import { getAuthToken } from "@/lib/auth-client"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
 import type { User } from "@supabase/supabase-js"
+
+type SubState = { active: true; renewsAt: string } | { active: false } | null
 
 export default function SettingsPage() {
   const { lang, setLang, t } = useI18n()
@@ -17,13 +20,51 @@ export default function SettingsPage() {
   const [demo, setDemo] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [signingIn, setSigningIn] = useState(false)
+  const [sub, setSub] = useState<SubState>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [subscribeLoading, setSubscribeLoading] = useState(false)
 
   useEffect(() => {
     setDemo(isDemoMode())
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) fetchSub()
     })
   }, [])
+
+  async function fetchSub() {
+    const token = await getAuthToken()
+    const r = await fetch("/api/companions/access", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    if (!r.ok) return
+    const data = await r.json()
+    setSub(data.subscription ? { active: true, renewsAt: data.subscription.renewsAt } : { active: false })
+  }
+
+  async function handleManageSubscription() {
+    setPortalLoading(true)
+    const token = await getAuthToken()
+    const r = await fetch("/api/stripe/portal", {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    const data = await r.json()
+    if (data.url) window.location.href = data.url
+    else setPortalLoading(false)
+  }
+
+  async function handleSubscribe() {
+    setSubscribeLoading(true)
+    const token = await getAuthToken()
+    const r = await fetch("/api/stripe/checkout/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    })
+    const data = await r.json()
+    if (data.url) window.location.href = data.url
+    else setSubscribeLoading(false)
+  }
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -141,6 +182,58 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
+
+          {/* Subscription */}
+          {user && !demo && (
+            <div className="space-y-3">
+              <p className="font-display text-xl text-[#6a4f79] uppercase">
+                {t("settings.subscription")}
+              </p>
+              <div
+                className="w-full px-4 py-4 border"
+                style={{ background: "#f7f3ec", borderColor: "#6a4f79", borderBottomWidth: 4 }}
+              >
+                {sub === null ? (
+                  <p className="font-serif text-sm text-black/50">…</p>
+                ) : sub.active ? (
+                  <>
+                    <div className="space-y-1 mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#6a4f79] text-base leading-none">✓</span>
+                        <p className="font-serif text-sm text-black/80">{t("settings.subscriptionActive")}</p>
+                      </div>
+                      <p className="font-serif text-xs text-black/50 pl-5">
+                        {t("settings.subscriptionRenews")} {new Date(sub.renewsAt).toLocaleDateString(lang === "pl" ? "pl-PL" : "en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleManageSubscription}
+                      disabled={portalLoading}
+                      className="w-full figma-btn disabled:opacity-50"
+                      style={{ background: "#f7f3ec", borderColor: "#6a4f79" }}
+                    >
+                      <span className="font-display text-[#6a4f79] text-base leading-none uppercase translate-y-[2px]">
+                        {portalLoading ? "…" : t("settings.manageSubscription")}
+                      </span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-serif text-sm text-black/70 mb-4">{t("settings.noSubscription")}</p>
+                    <button
+                      onClick={handleSubscribe}
+                      disabled={subscribeLoading}
+                      className="w-full figma-btn disabled:opacity-50"
+                    >
+                      <span className="font-display text-[#fde52f] text-base leading-none uppercase translate-y-[2px]">
+                        {subscribeLoading ? "…" : t("settings.subscribe")}
+                      </span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Language */}
           <div className="space-y-3">

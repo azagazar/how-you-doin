@@ -90,7 +90,13 @@
     "continueGoogle": "Continue with Google",
     "language": "Language",
     "developer": "Developer",
-    "apiDocs": "API Documentation"
+    "apiDocs": "API Documentation",
+    "subscription": "Your Subscription",
+    "subscriptionActive": "All companions unlocked",
+    "subscriptionRenews": "Renews",
+    "manageSubscription": "Manage Subscription",
+    "subscribe": "Unlock All Companions",
+    "noSubscription": "Unlock Monica, Chandler, Ross, Phoebe and Rachel with a monthly subscription."
   },
   "joey": {
     "buttonLabel": "Ask Joey",
