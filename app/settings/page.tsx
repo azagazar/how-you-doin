@@ -210,9 +210,8 @@ export default function SettingsPage() {
                       onClick={handleManageSubscription}
                       disabled={portalLoading}
                       className="w-full figma-btn disabled:opacity-50"
-                      style={{ background: "#f7f3ec", borderColor: "#6a4f79" }}
                     >
-                      <span className="font-display text-[#6a4f79] text-base leading-none uppercase translate-y-[2px]">
+                      <span className="font-display text-[#fde52f] text-base leading-none uppercase translate-y-[2px]">
                         {portalLoading ? "…" : t("settings.manageSubscription")}
                       </span>
                     </button>
