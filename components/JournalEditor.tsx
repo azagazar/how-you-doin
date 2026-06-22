@@ -38,6 +38,7 @@ type Props = {
   onChange: (html: string) => void
   placeholder?: string
   onCameraClick?: () => void
+  photoSlot?: React.ReactNode
 }
 
 type VoiceState = "idle" | "listening" | "error"
@@ -51,7 +52,7 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionCtor | null {
   }
 }
 
-export function JournalEditor({ content, onChange, placeholder, onCameraClick }: Props) {
+export function JournalEditor({ content, onChange, placeholder, onCameraClick, photoSlot }: Props) {
   const { lang, t } = useI18n()
 
   const editor = useEditor({
@@ -162,6 +163,11 @@ export function JournalEditor({ content, onChange, placeholder, onCameraClick }:
 
   return (
     <div className="border border-[#6a4f79] border-b-4 bg-[#faf8f4]">
+      {photoSlot && (
+        <div className="px-4 pt-4 pb-2 border-b border-[#6a4f79]/20">
+          {photoSlot}
+        </div>
+      )}
       <div className="px-4 py-3">
         <EditorContent editor={editor} />
       </div>

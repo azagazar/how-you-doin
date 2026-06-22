@@ -281,22 +281,22 @@ function CheckInPageContent() {
             <p className="font-display text-2xl text-black uppercase">
               {t("home.journalSection")}
             </p>
-            {frameVisible && (
-              <div className="w-[180px] mx-auto pb-1">
-                <SnapshotFrame
-                  photoUrl={photoUrl}
-                  onAdd={handleCameraClick}
-                  onDelete={handlePhotoDelete}
-                  loading={photoLoading}
-                  label=""
-                />
-              </div>
-            )}
             <JournalEditor
               content={content}
               onChange={(html) => { setContent(html); setSaved(false) }}
               placeholder={t(prompt)}
               onCameraClick={handleCameraClick}
+              photoSlot={frameVisible ? (
+                <div className="w-[180px] mx-auto">
+                  <SnapshotFrame
+                    photoUrl={photoUrl}
+                    onAdd={handleCameraClick}
+                    onDelete={handlePhotoDelete}
+                    loading={photoLoading}
+                    label=""
+                  />
+                </div>
+              ) : undefined}
             />
             {photoError && (
               <p className="font-serif text-sm text-red-500 text-center">{photoError}</p>
