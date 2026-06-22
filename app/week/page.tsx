@@ -229,21 +229,19 @@ export default function WeekPage() {
                   </p>
                   <div className="flex items-center gap-3">
                     {insights.topGuests.map((g) => (
-                      <div key={g.id} className="flex items-center gap-2">
+                      <div key={g.id} className="flex flex-col items-center gap-1">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={`/icons/${g.id}.png`}
                           alt={g.name}
                           style={{ width: 40, height: 40, objectFit: "contain" }}
                         />
-                        <div>
-                          <p className="font-display text-xl text-black uppercase leading-tight">
-                            {g.name}
-                          </p>
-                          <p className="font-serif text-sm text-[#938d8d] leading-tight">
-                            {g.pct}% {t("week.ofYourEntries")}
-                          </p>
-                        </div>
+                        <p className="font-display text-xl text-black uppercase leading-tight">
+                          {g.name}
+                        </p>
+                        <p className="font-serif text-sm text-[#938d8d] leading-tight text-center">
+                          {g.pct}% {t("week.ofYourEntries")}
+                        </p>
                       </div>
                     ))}
                   </div>
