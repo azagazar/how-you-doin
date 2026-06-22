@@ -227,7 +227,7 @@ export default function WeekPage() {
                   <p className="font-display text-sm text-[#6a4f79] uppercase leading-none tracking-wide">
                     {t("week.mostTimeOnCouch")}
                   </p>
-                  <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {insights.topGuests.map((g) => (
                       <div key={g.id} className="flex flex-col items-center gap-1">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
