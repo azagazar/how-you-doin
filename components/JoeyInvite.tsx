@@ -28,7 +28,8 @@ export function JoeyInvite({ onClick, lang }: Props) {
           transition-opacity hover:opacity-80 active:opacity-60
         "
       >
-        <span className="text-2xl leading-none" aria-hidden="true">🍕</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/joey.png" alt="" aria-hidden="true" className="w-7 h-7 object-contain" />
         <span className="font-display text-[#fde52f] text-2xl uppercase leading-none tracking-wide">
           {LABEL[lang]}
         </span>
@@ -41,7 +42,8 @@ export function JoeyInvite({ onClick, lang }: Props) {
         className="hidden lg:inline-flex figma-btn gap-2 !bg-[#6FB6D4] !border-[#6FB6D4] fixed bottom-8 right-8 z-20"
       >
         <span className="font-display text-[#fde52f] text-xl leading-none uppercase translate-y-[2px] flex items-center gap-2">
-          <span aria-hidden="true">🍕</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/joey.png" alt="" aria-hidden="true" className="w-6 h-6 object-contain" />
           {LABEL[lang]}
         </span>
       </button>

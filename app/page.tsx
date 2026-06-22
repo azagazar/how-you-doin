@@ -2,8 +2,9 @@
 
 export const dynamic = "force-dynamic"
 
-import { useEffect, useState, useCallback, useMemo, useRef } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState, useCallback, useMemo, useRef, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { CompanionId } from "@/lib/companions"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
 import { isDemoMode, setDemoMode } from "@/lib/demo"
@@ -33,7 +34,7 @@ function formatDateBar(lang: string): string {
   }).toUpperCase()
 }
 
-export default function CheckInPage() {
+function CheckInPageContent() {
   const router = useRouter()
   const { t, lang } = useI18n()
   const [userName, setUserName] = useState<string | null>(null)
@@ -44,7 +45,9 @@ export default function CheckInPage() {
   const [existingId, setExistingId] = useState<string | null>(null)
   const [appReady, setAppReady] = useState(false)
 
+  const searchParams = useSearchParams()
   const [joeyOpen, setJoeyOpen] = useState(false)
+  const [initialCompanion, setInitialCompanion] = useState<CompanionId>("joey")
   const [frameVisible, setFrameVisible] = useState(false)
   const [photoUrl, setPhotoUrl] = useState<string | undefined>()
   const [photoLoading, setPhotoLoading] = useState(false)
@@ -96,11 +99,24 @@ export default function CheckInPage() {
 
     Promise.all([init(), minDelay]).then(() => {
       if (redirect) router.replace(redirect)
-      else setAppReady(true)
+      else {
+        setAppReady(true)
+        // Open chat panel after Stripe redirect
+        const unlocked = searchParams.get("unlocked") as CompanionId | null
+        const subscribed = searchParams.get("subscribed")
+        if (unlocked) {
+          setInitialCompanion(unlocked)
+          setJoeyOpen(true)
+          router.replace("/")
+        } else if (subscribed) {
+          setJoeyOpen(true)
+          router.replace("/")
+        }
+      }
     }).catch(() => {
       router.replace("/login")
     })
-  }, [router])
+  }, [router, searchParams])
 
   const handleEnergySelect = useCallback((key: EnergyKey) => {
     setSaved(false)
@@ -203,7 +219,7 @@ export default function CheckInPage() {
   return (
     <div className="h-dvh flex flex-col bg-[#ece7df]">
       <DesktopNav />
-      <div className="flex-1 overflow-y-auto pb-24 lg:pb-6">
+      <div className="flex-1 overflow-y-auto pb-24 lg:pb-6 page-enter">
 
         {/* Header */}
         <div className="pt-5 pb-2 text-center px-5">
@@ -253,30 +269,35 @@ export default function CheckInPage() {
           </div>
 
           {/* Couch story + reflection */}
-          <CouchStoryBlock story={couchStory} />
+          <div
+            key={`${primaryEnergy ?? "none"}-${secondaryEnergy ?? "none"}`}
+            className="content-fade"
+          >
+            <CouchStoryBlock story={couchStory} />
+          </div>
 
           {/* Journal section */}
           <div className="space-y-2">
             <p className="font-display text-2xl text-black uppercase">
               {t("home.journalSection")}
             </p>
+            {frameVisible && (
+              <div className="w-[180px] mx-auto pb-1">
+                <SnapshotFrame
+                  photoUrl={photoUrl}
+                  onAdd={handleCameraClick}
+                  onDelete={handlePhotoDelete}
+                  loading={photoLoading}
+                  label=""
+                />
+              </div>
+            )}
             <JournalEditor
               content={content}
               onChange={(html) => { setContent(html); setSaved(false) }}
               placeholder={t(prompt)}
               onCameraClick={handleCameraClick}
             />
-            {/* Snapshot frame — inside journal section, below editor */}
-            {frameVisible && (
-              <div className="w-4/5 mx-auto pt-2">
-                <SnapshotFrame
-                  photoUrl={photoUrl}
-                  onAdd={handleCameraClick}
-                  onDelete={handlePhotoDelete}
-                  loading={photoLoading}
-                />
-              </div>
-            )}
             {photoError && (
               <p className="font-serif text-sm text-red-500 text-center">{photoError}</p>
             )}
@@ -328,6 +349,7 @@ export default function CheckInPage() {
           currentEntry={currentEntryForJoey}
           lang={lang}
           onClose={() => setJoeyOpen(false)}
+          initialCompanion={initialCompanion}
         />
       )}
 
@@ -340,5 +362,13 @@ export default function CheckInPage() {
         aria-hidden="true"
       />
     </div>
+  )
+}
+
+export default function CheckInPage() {
+  return (
+    <Suspense fallback={<ChemexLoaderScreen />}>
+      <CheckInPageContent />
+    </Suspense>
   )
 }

@@ -59,10 +59,35 @@
   "nav": {
     "checkIn": "Dziś",
     "journal": "Historia",
+    "week": "Ten Tydzień",
     "settings": "Ustawienia"
+  },
+  "week": {
+    "title": "Ten Tydzień",
+    "recapSection": "Ten tydzień na kanapie",
+    "insightsSection": "Spostrzeżenia z kanapy",
+    "mostTimeOnCouch": "Najczęstszy gość na kanapie",
+    "ofYourEntries": "Twoich wpisów w tym miesiącu",
+    "thisMonthsCouch": "Kanapa tego miesiąca",
+    "daysOnCouch": "dni na kanapie w tym miesiącu",
+    "snapshotMemories": "Wspomnienia z aparatu",
+    "photosThisMonth": "zdjęcia w tym miesiącu",
+    "emptyCouch": "Ten tydzień na kanapie był spokojny.",
+    "emptyNote": "Wróć po kilku kolejnych dniach.",
+    "noEntriesYet": "Kanapa jeszcze czeka.",
+    "noEntriesNote": "Zacznij od dzisiejszego check-inu.",
+    "generating": "Myślę…",
+    "recapError": "Nie udało się wygenerować refleksji. Spróbuj później."
   },
   "settings": {
     "title": "Ustawienia",
+    "account": "Twoje konto",
+    "couchSaved": "Twoja kanapa jest zapisana",
+    "connectedGoogle": "Połączono z Google",
+    "signOut": "Wyloguj się",
+    "demoMode": "Tryb Demo",
+    "demoNote": "Twoje wpisy nie będą zapisywane między sesjami.",
+    "continueGoogle": "Kontynuuj z Google",
     "language": "Język",
     "developer": "Developer",
     "apiDocs": "Dokumentacja API"

@@ -59,10 +59,35 @@
   "nav": {
     "checkIn": "Check-In",
     "journal": "Journal",
+    "week": "This Week",
     "settings": "Settings"
+  },
+  "week": {
+    "title": "This Week",
+    "recapSection": "This Week on the Couch",
+    "insightsSection": "Couch Insights",
+    "mostTimeOnCouch": "Most time on the couch",
+    "ofYourEntries": "of your entries this month",
+    "thisMonthsCouch": "This month's couch",
+    "daysOnCouch": "days on the couch this month",
+    "snapshotMemories": "Snapshot Memories",
+    "photosThisMonth": "photos this month",
+    "emptyCouch": "The couch has been quiet this week.",
+    "emptyNote": "Come back after a few more days.",
+    "noEntriesYet": "The couch is empty.",
+    "noEntriesNote": "Start with today's check-in.",
+    "generating": "Thinking…",
+    "recapError": "Couldn't generate a recap. Try again later."
   },
   "settings": {
     "title": "Settings",
+    "account": "Your Account",
+    "couchSaved": "Your couch is saved",
+    "connectedGoogle": "Connected with Google",
+    "signOut": "Sign Out",
+    "demoMode": "Demo Mode",
+    "demoNote": "Your entries won't be saved between sessions.",
+    "continueGoogle": "Continue with Google",
     "language": "Language",
     "developer": "Developer",
     "apiDocs": "API Documentation"

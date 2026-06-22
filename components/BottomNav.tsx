@@ -30,6 +30,18 @@ function JournalIcon({ active }: { active: boolean }) {
   )
 }
 
+function WeekIcon({ active }: { active: boolean }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/icons/coffee.png"
+      alt=""
+      aria-hidden="true"
+      style={{ height: 28, width: "auto", opacity: active ? 1 : 0.45 }}
+    />
+  )
+}
+
 function SettingsIcon({ active }: { active: boolean }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -49,6 +61,7 @@ export function BottomNav() {
   const tabs = [
     { href: "/", label: t("nav.checkIn"), Icon: CouchIcon },
     { href: "/history", label: t("nav.journal"), Icon: JournalIcon },
+    { href: "/week", label: t("nav.week"), Icon: WeekIcon },
     { href: "/settings", label: t("nav.settings"), Icon: SettingsIcon },
   ]
 

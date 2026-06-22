@@ -99,7 +99,7 @@ export default function HistoryPage() {
     <div className="h-dvh flex flex-col bg-[#ece7df]">
       <DesktopNav />
 
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 page-enter">
 
         {/* Left panel — date navigator + entry list */}
         <div className="flex-1 overflow-y-auto pb-24 lg:pb-6 lg:flex-none lg:w-80 lg:border-r lg:border-[#6a4f79]">

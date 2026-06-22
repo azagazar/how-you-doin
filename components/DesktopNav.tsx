@@ -12,6 +12,7 @@ export function DesktopNav() {
   const tabs = [
     { href: "/", label: t("nav.checkIn") },
     { href: "/history", label: t("nav.journal") },
+    { href: "/week", label: t("nav.week") },
     { href: "/settings", label: t("nav.settings") },
   ]
 

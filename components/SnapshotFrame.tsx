@@ -75,7 +75,7 @@ export function SnapshotFrame({
 
   return (
     <div className="space-y-2 hyd-frame-enter">
-      <p className="font-display text-2xl text-black uppercase">{label}</p>
+      {label && <p className="font-display text-2xl text-black uppercase">{label}</p>}
 
       {/*
        * SVG layers (bottom → top):

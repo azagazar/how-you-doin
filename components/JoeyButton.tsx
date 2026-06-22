@@ -13,7 +13,8 @@ export function JoeyButton({ label, onClick }: Props) {
       aria-label={label}
     >
       <span className="font-display text-[#fde52f] text-xl leading-none uppercase translate-y-[2px] flex items-center gap-2">
-        <span aria-hidden="true">🍕</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/joey.png" alt="" aria-hidden="true" className="w-6 h-6 object-contain" />
         {label}
       </span>
     </button>

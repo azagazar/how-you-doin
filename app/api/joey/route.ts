@@ -1,5 +1,6 @@
 import { streamText } from "ai"
 import { createAnthropic } from "@ai-sdk/anthropic"
+import { getUserFromRequest } from "@/lib/auth-server"
 import { buildJoeySystemPrompt } from "@/lib/joey"
 import { JournalEntry } from "@/lib/types"
 
@@ -14,6 +15,9 @@ const anthropic = createAnthropic({
 })
 
 export async function POST(req: Request) {
+  const user = await getUserFromRequest(req)
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 })
+
   const { messages, currentEntry, recentEntries, lang } = (await req.json()) as {
     messages: { role: "user" | "assistant"; content: string }[]
     currentEntry: JournalEntry | null

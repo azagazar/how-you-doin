@@ -3,7 +3,7 @@ import { EnergyKey } from "@/lib/types"
 
 export const runtime = "nodejs"
 
-const USER_ID = "3bec71e0-3395-4d99-83ec-2734abefd507"
+const USER_ID = process.env.JOURNAL_SKILL_USER_ID!
 
 function getAdminClient() {
   return createClient(
