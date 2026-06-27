@@ -153,7 +153,7 @@ export default function HistoryPage() {
 
                 {entries.map((entry) => {
                   const preview = stripHtml(entry.content)
-                  const story = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy, lang)
+                  const story = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy)
                   const dayTitle = story.dayTitle
                   const isSelected = entry.id === selectedId
 

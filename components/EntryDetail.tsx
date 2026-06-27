@@ -153,8 +153,8 @@ export function EntryDetail({ id, onDelete }: Props) {
 
   if (!entry) return null
 
-  const viewStory = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy, lang)
-  const editStory = getCouchStory(primaryEnergy, secondaryEnergy, lang)
+  const viewStory = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy)
+  const editStory = getCouchStory(primaryEnergy, secondaryEnergy)
 
   return (
     <div className="max-w-lg mx-auto px-5 pt-8 pb-10 space-y-6 w-full">
