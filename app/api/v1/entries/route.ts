@@ -1,10 +1,7 @@
 import { getUserFromApiKey, unauthorized, getAdminSupabase } from "@/lib/api-auth"
+import { stripHtml } from "@/lib/utils"
 
 export const runtime = "nodejs"
-
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
-}
 
 export async function GET(req: Request) {
   const user = await getUserFromApiKey(req)

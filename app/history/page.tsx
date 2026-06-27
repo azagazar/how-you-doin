@@ -1,7 +1,5 @@
 "use client"
 
-export const dynamic = "force-dynamic"
-
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getEntries, getUserName } from "@/lib/storage"
@@ -9,6 +7,7 @@ import { supabase } from "@/lib/supabase"
 import { isDemoMode } from "@/lib/demo"
 import { JournalEntry } from "@/lib/types"
 import { useCouchStoryResolver } from "@/lib/couchStories"
+import { stripHtml, formatEntryDate } from "@/lib/utils"
 import { useI18n } from "@/lib/i18n"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
@@ -19,18 +18,6 @@ import { JoeyChat } from "@/components/JoeyChat"
 import { JoeyButton } from "@/components/JoeyButton"
 import { JoeyInvite } from "@/components/JoeyInvite"
 
-function formatDate(dateStr: string, lang: string): string {
-  const d = new Date(dateStr + "T12:00:00")
-  return d.toLocaleDateString(lang === "pl" ? "pl-PL" : "en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).toUpperCase()
-}
-
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "").trim()
-}
 
 export default function HistoryPage() {
   const router = useRouter()
@@ -145,7 +132,7 @@ export default function HistoryPage() {
                 {emptyDaySelected && (
                   <div className="figma-card p-5 space-y-3 animate-settle lg:hidden">
                     <p className="font-display text-xl text-black uppercase leading-none">
-                      {formatDate(selectedDate, lang)}
+                      {formatEntryDate(selectedDate, lang)}
                     </p>
                     <p className="font-serif text-base text-[#938d8d]">{t("history.emptyDay")}</p>
                   </div>
@@ -154,6 +141,7 @@ export default function HistoryPage() {
                 {entries.map((entry) => {
                   const preview = stripHtml(entry.content)
                   const story = getCouchStory(entry.primaryEnergy, entry.secondaryEnergy)
+
                   const dayTitle = story.dayTitle
                   const isSelected = entry.id === selectedId
 
@@ -165,7 +153,7 @@ export default function HistoryPage() {
                     >
                       <div className="p-5 space-y-3">
                         <p className="font-display text-xl text-black uppercase leading-none">
-                          {formatDate(entry.date, lang)}
+                          {formatEntryDate(entry.date, lang)}
                         </p>
 
                         {(entry.primaryEnergy || entry.secondaryEnergy) && (
@@ -213,7 +201,7 @@ export default function HistoryPage() {
           ) : emptyDaySelected ? (
             <div className="flex flex-col items-center justify-center flex-1 gap-5 text-center px-8">
               <p className="font-display text-2xl text-black uppercase opacity-60">
-                {formatDate(selectedDate, lang)}
+                {formatEntryDate(selectedDate, lang)}
               </p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

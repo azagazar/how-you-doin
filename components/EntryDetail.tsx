@@ -11,20 +11,12 @@ import { useI18n } from "@/lib/i18n"
 import { EnergyCard } from "@/components/EnergyCard"
 import { EnergyBadge } from "@/components/EnergyBadge"
 import { CouchStoryBlock } from "@/components/CouchStoryBlock"
-import { JournalEditor } from "@/components/JournalEditor"
+import dynamic from "next/dynamic"
+const JournalEditor = dynamic(() => import("@/components/JournalEditor").then(m => ({ default: m.JournalEditor })), { ssr: false })
 import { SnapshotFrame } from "@/components/SnapshotFrame"
 import { uploadPhoto, deletePhoto } from "@/lib/photoStorage"
 import { isDemoMode } from "@/lib/demo"
-
-function formatDate(dateStr: string, lang: string): string {
-  const d = new Date(dateStr + "T12:00:00")
-  return d.toLocaleDateString(lang === "pl" ? "pl-PL" : "en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  })
-}
+import { formatEntryDateFull } from "@/lib/utils"
 
 interface Props {
   id: string
@@ -168,7 +160,7 @@ export function EntryDetail({ id, onDelete }: Props) {
 
       <div className="space-y-1">
         <p className="font-date italic text-[#6a4f79] text-lg leading-none uppercase">
-          {formatDate(entry.date, lang)}
+          {formatEntryDateFull(entry.date, lang)}
         </p>
         <h1 className="font-display text-5xl text-black uppercase leading-none">{t("entryDetail.title")}</h1>
       </div>

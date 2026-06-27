@@ -2,6 +2,7 @@ import { generateText } from "ai"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { getUserFromRequest, getAdminSupabase } from "@/lib/auth-server"
 import { CompanionId, COMPANIONS, buildRecapSystemPrompt } from "@/lib/companions"
+import { stripHtml } from "@/lib/utils"
 
 export const runtime = "nodejs"
 
@@ -9,10 +10,6 @@ const anthropic = createAnthropic({
   baseURL: "https://api.anthropic.com/v1",
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
-
-function stripHtml(html: string): string {
-  return (html ?? "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
-}
 
 export async function POST(req: Request) {
   const user = await getUserFromRequest(req)

@@ -8,12 +8,9 @@ import { hybridSearch } from "@/lib/search"
 import { getCouchStory } from "@/lib/couchStories"
 import { buildJoeySystemPrompt, needsHistoricalContext } from "@/lib/joey"
 import { JournalEntry, EnergyKey } from "@/lib/types"
+import { stripHtml } from "@/lib/utils"
 
 const VALID_ENERGIES: EnergyKey[] = ["monica", "chandler", "ross", "joey", "phoebe", "rachel"]
-
-function stripHtml(html: string) {
-  return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
-}
 
 function toHtml(text: string) {
   if (text.trimStart().startsWith("<")) return text

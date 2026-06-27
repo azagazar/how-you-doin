@@ -1,7 +1,5 @@
 "use client"
 
-export const dynamic = "force-dynamic"
-
 import { useEffect, useState, useCallback, useMemo, useRef, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import posthog from "posthog-js"
@@ -14,26 +12,18 @@ import { uploadPhoto, deletePhoto } from "@/lib/photoStorage"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
 import { useCouchStory } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
+import { formatDateBar } from "@/lib/utils"
 import { EnergyCard } from "@/components/EnergyCard"
 import { CouchSelector } from "@/components/CouchSelector"
 import { CouchStoryBlock } from "@/components/CouchStoryBlock"
-import { JournalEditor } from "@/components/JournalEditor"
+import dynamic from "next/dynamic"
+const JournalEditor = dynamic(() => import("@/components/JournalEditor").then(m => ({ default: m.JournalEditor })), { ssr: false })
 import { SnapshotFrame } from "@/components/SnapshotFrame"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
 import { ChemexLoaderScreen } from "@/components/ChemexLoader"
 import { JoeyChat } from "@/components/JoeyChat"
 import { JoeyInvite } from "@/components/JoeyInvite"
-
-function formatDateBar(lang: string): string {
-  const d = new Date()
-  return d.toLocaleDateString(lang === "pl" ? "pl-PL" : "en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).toUpperCase()
-}
 
 function CheckInPageContent() {
   const router = useRouter()

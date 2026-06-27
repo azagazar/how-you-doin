@@ -18,6 +18,8 @@ type I18nContextType = {
 const I18nContext = createContext<I18nContextType | null>(null)
 
 const LANG_KEY = "hyd_lang"
+const CMS_CACHE_KEY = "hyd_cms_translations"
+const CMS_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
 const STATIC_TRANSLATIONS = { en: en as NestedObject, pl: pl as NestedObject }
 
@@ -52,15 +54,23 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem(CMS_CACHE_KEY)
+      if (cached) {
+        const { ts, data } = JSON.parse(cached)
+        if (Date.now() - ts < CMS_CACHE_TTL && data?.en && data?.pl) {
+          setTranslations({ en: { ...STATIC_TRANSLATIONS.en, ...data.en }, pl: { ...STATIC_TRANSLATIONS.pl, ...data.pl } })
+          return
+        }
+      }
+    } catch { /* ignore */ }
+
     fetch("/api/cms/translations")
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
         if (data?.en && data?.pl) {
-          // Merge Strapi translations with static (Strapi wins, stories stay from static)
-          setTranslations({
-            en: { ...STATIC_TRANSLATIONS.en, ...data.en },
-            pl: { ...STATIC_TRANSLATIONS.pl, ...data.pl },
-          })
+          setTranslations({ en: { ...STATIC_TRANSLATIONS.en, ...data.en }, pl: { ...STATIC_TRANSLATIONS.pl, ...data.pl } })
+          try { localStorage.setItem(CMS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })) } catch { /* ignore */ }
         }
       })
       .catch(() => { /* keep static fallback */ })
