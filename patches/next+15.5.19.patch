@@ -1,0 +1,13 @@
+diff --git a/dist/server/dev/hot-reloader-webpack.js b/dist/server/dev/hot-reloader-webpack.js
+index 1234567..abcdefg 100644
+--- a/dist/server/dev/hot-reloader-webpack.js
++++ b/dist/server/dev/hot-reloader-webpack.js
+@@ -208,7 +208,7 @@ async function getVersionInfo() {
+         let res;
+         try {
+             // use NPM registry regardless user using Yarn
+-            res = await fetch('https://registry.npmjs.org/-/package/next/dist-tags');
++            res = await fetch('https://registry.npmjs.org/-/package/next/dist-tags', { signal: AbortSignal.timeout(3000) });
+         } catch  {
+         // ignore fetch errors
+         }
