@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import { getStripe } from "@/lib/stripe"
+import { getPostHogClient } from "@/lib/posthog-server"
 import type Stripe from "stripe"
 
 export const runtime = "nodejs"
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
 
       if (!userId) break
 
+      const posthog = getPostHogClient()
       if (session.mode === "payment" && companionId) {
         // One-time unlock
         await supabase.from("companion_unlocks").upsert(
@@ -52,6 +54,11 @@ export async function POST(req: Request) {
           },
           { onConflict: "user_id,companion_id", ignoreDuplicates: true }
         )
+        posthog.capture({
+          distinctId: userId,
+          event: "companion_unlocked",
+          properties: { companion: companionId, stripe_session_id: session.id },
+        })
       } else if (session.mode === "subscription" && session.subscription) {
         // Subscription — fetch full subscription object for period end
         const stripe = getStripe()
@@ -73,6 +80,14 @@ export async function POST(req: Request) {
           },
           { onConflict: "user_id" }
         )
+        posthog.capture({
+          distinctId: userId,
+          event: "subscription_completed",
+          properties: {
+            stripe_subscription_id: sub.id,
+            stripe_customer_id: session.customer as string,
+          },
+        })
       }
       break
     }
@@ -98,6 +113,11 @@ export async function POST(req: Request) {
 
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription
+      const { data: subRow } = await supabase
+        .from("user_subscriptions")
+        .select("user_id")
+        .eq("stripe_subscription_id", sub.id)
+        .maybeSingle()
       await supabase
         .from("user_subscriptions")
         .update({
@@ -106,6 +126,14 @@ export async function POST(req: Request) {
           updated_at: new Date().toISOString(),
         })
         .eq("stripe_subscription_id", sub.id)
+      if (subRow?.user_id) {
+        const posthog = getPostHogClient()
+        posthog.capture({
+          distinctId: subRow.user_id,
+          event: "subscription_canceled",
+          properties: { stripe_subscription_id: sub.id },
+        })
+      }
       break
     }
   }

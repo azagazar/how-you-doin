@@ -8,7 +8,7 @@ import { getEntries, getUserName } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
 import { isDemoMode } from "@/lib/demo"
 import { JournalEntry } from "@/lib/types"
-import { getCouchStory } from "@/lib/couchStories"
+import { useCouchStoryResolver } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
 import { BottomNav } from "@/components/BottomNav"
 import { DesktopNav } from "@/components/DesktopNav"
@@ -35,6 +35,7 @@ function stripHtml(html: string): string {
 export default function HistoryPage() {
   const router = useRouter()
   const { lang, t } = useI18n()
+  const getCouchStory = useCouchStoryResolver()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)

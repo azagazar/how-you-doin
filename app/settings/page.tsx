@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import posthog from "posthog-js"
 import { useI18n } from "@/lib/i18n"
 import { supabase } from "@/lib/supabase"
 import { isDemoMode, setDemoMode } from "@/lib/demo"
@@ -56,6 +57,7 @@ export default function SettingsPage() {
 
   async function handleSubscribe() {
     setSubscribeLoading(true)
+    posthog.capture("subscription_checkout_started", { source: "settings" })
     const token = await getAuthToken()
     const r = await fetch("/api/stripe/checkout/subscribe", {
       method: "POST",
@@ -68,6 +70,8 @@ export default function SettingsPage() {
 
   async function handleSignOut() {
     setSigningOut(true)
+    posthog.capture("user_signed_out")
+    posthog.reset()
     setDemoMode(false)
     await supabase.auth.signOut()
     router.replace("/login")

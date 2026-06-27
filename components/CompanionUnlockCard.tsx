@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import posthog from "posthog-js"
 import { COMPANIONS, CompanionId } from "@/lib/companions"
 import { getAuthToken } from "@/lib/auth-client"
 import { Lang } from "@/lib/i18n"
@@ -19,6 +20,7 @@ export function CompanionUnlockCard({ companionId, lang, onBack }: Props) {
   async function handleSubscribe() {
     setLoading("subscribe")
     setError(null)
+    posthog.capture("subscription_checkout_started", { source: "companion_unlock_card", companion: companionId })
     try {
       const token = await getAuthToken()
       const res = await fetch("/api/stripe/checkout/subscribe", {
@@ -29,6 +31,7 @@ export function CompanionUnlockCard({ companionId, lang, onBack }: Props) {
       if (!res.ok) throw new Error(data.error ?? "Something went wrong")
       window.location.href = data.url
     } catch (e) {
+      posthog.captureException(e instanceof Error ? e : new Error(String(e)))
       setError(e instanceof Error ? e.message : "Something went wrong")
       setLoading(null)
     }
@@ -37,6 +40,7 @@ export function CompanionUnlockCard({ companionId, lang, onBack }: Props) {
   async function handleUnlock() {
     setLoading("unlock")
     setError(null)
+    posthog.capture("companion_unlock_checkout_started", { companion: companionId })
     try {
       const token = await getAuthToken()
       const res = await fetch("/api/stripe/checkout/unlock", {
@@ -51,6 +55,7 @@ export function CompanionUnlockCard({ companionId, lang, onBack }: Props) {
       if (!res.ok) throw new Error(data.error ?? "Something went wrong")
       window.location.href = data.url
     } catch (e) {
+      posthog.captureException(e instanceof Error ? e : new Error(String(e)))
       setError(e instanceof Error ? e.message : "Something went wrong")
       setLoading(null)
     }

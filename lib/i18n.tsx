@@ -6,17 +6,20 @@ import pl from "../locales/pl.json"
 
 export type Lang = "en" | "pl"
 
+type NestedObject = { [key: string]: string | string[] | NestedObject }
+
 type I18nContextType = {
   lang: Lang
   setLang: (l: Lang) => void
   t: (key: string) => string
+  rawTranslations: { en: NestedObject; pl: NestedObject }
 }
 
 const I18nContext = createContext<I18nContextType | null>(null)
 
 const LANG_KEY = "hyd_lang"
 
-type NestedObject = { [key: string]: string | string[] | NestedObject }
+const STATIC_TRANSLATIONS = { en: en as NestedObject, pl: pl as NestedObject }
 
 function lookup(obj: NestedObject, keys: string[]): string {
   let current: string | string[] | NestedObject = obj
@@ -39,6 +42,7 @@ function lookup(obj: NestedObject, keys: string[]): string {
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en")
+  const [translations, setTranslations] = useState<{ en: NestedObject; pl: NestedObject }>(STATIC_TRANSLATIONS)
 
   useEffect(() => {
     try {
@@ -47,9 +51,24 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     } catch { /* localStorage unavailable (e.g. iOS private mode) */ }
   }, [])
 
-  const translations = (lang === "pl" ? pl : en) as NestedObject
+  useEffect(() => {
+    fetch("/api/cms/translations")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data?.en && data?.pl) {
+          // Merge Strapi translations with static (Strapi wins, stories stay from static)
+          setTranslations({
+            en: { ...STATIC_TRANSLATIONS.en, ...data.en },
+            pl: { ...STATIC_TRANSLATIONS.pl, ...data.pl },
+          })
+        }
+      })
+      .catch(() => { /* keep static fallback */ })
+  }, [])
 
-  const t = (key: string): string => lookup(translations, key.split("."))
+  const currentLocale = (lang === "pl" ? translations.pl : translations.en)
+
+  const t = (key: string): string => lookup(currentLocale, key.split("."))
 
   const setLang = (l: Lang) => {
     setLangState(l)
@@ -59,7 +78,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <I18nContext.Provider value={{ lang, setLang, t }}>
+    <I18nContext.Provider value={{ lang, setLang, t, rawTranslations: translations }}>
       {children}
     </I18nContext.Provider>
   )

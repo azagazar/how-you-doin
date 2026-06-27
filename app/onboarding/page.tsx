@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { setUserName } from "@/lib/storage"
 import { useI18n } from "@/lib/i18n"
 import { SectionTag } from "@/components/SectionTag"
+import posthog from "posthog-js"
 
 export default function OnboardingPage() {
   const [name, setName] = useState("")
@@ -18,6 +19,7 @@ export default function OnboardingPage() {
     const trimmed = name.trim()
     if (!trimmed) return
     setUserName(trimmed)
+    posthog.capture("onboarding_completed", { name: trimmed })
     router.push("/")
   }
 

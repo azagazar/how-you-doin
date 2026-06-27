@@ -9,6 +9,7 @@ import { setDemoMode } from "@/lib/demo"
 import { SectionTag } from "@/components/SectionTag"
 import { useI18n } from "@/lib/i18n"
 import { ChemexLoaderScreen } from "@/components/ChemexLoader"
+import posthog from "posthog-js"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,6 +20,7 @@ export default function LoginPage() {
   async function handleGoogleLogin() {
     setLoading(true)
     setError(null)
+    posthog.capture("login_started", { provider: "google" })
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -26,6 +28,7 @@ export default function LoginPage() {
       },
     })
     if (error) {
+      posthog.captureException(error)
       setError(error.message)
       setLoading(false)
     }
@@ -33,6 +36,7 @@ export default function LoginPage() {
 
   async function handleDemoMode() {
     setLoading(true)
+    posthog.capture("demo_mode_started")
     setDemoMode(true)
     await new Promise(r => setTimeout(r, 2000))
     router.push("/onboarding")

@@ -1,11 +1,12 @@
 "use client"
 
+import DOMPurify from "dompurify"
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { getEntries, saveEntry, deleteEntry } from "@/lib/storage"
 import { JournalEntry, EnergyKey } from "@/lib/types"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
-import { getCouchStory } from "@/lib/couchStories"
+import { useCouchStoryResolver } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
 import { EnergyCard } from "@/components/EnergyCard"
 import { EnergyBadge } from "@/components/EnergyBadge"
@@ -33,6 +34,7 @@ interface Props {
 export function EntryDetail({ id, onDelete }: Props) {
   const router = useRouter()
   const { lang, t } = useI18n()
+  const getCouchStory = useCouchStoryResolver()
   const [entry, setEntry] = useState<JournalEntry | null>(null)
   const [editing, setEditing] = useState(false)
   const [primaryEnergy, setPrimaryEnergy] = useState<EnergyKey | undefined>()
@@ -238,7 +240,7 @@ export function EntryDetail({ id, onDelete }: Props) {
       ) : (
         <div
           className="prose prose-sm max-w-none font-serif text-[#2C1A0E] border border-[#6a4f79] border-b-4 bg-[#faf8f4] px-4 py-4 [&_p]:font-serif [&_li]:font-serif"
-          dangerouslySetInnerHTML={{ __html: entry.content || "<p class='font-serif text-[#b0a090] italic'>No journal entry written.</p>" }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(entry.content || "<p class='font-serif text-[#b0a090] italic'>No journal entry written.</p>") }}
         />
       )}
 

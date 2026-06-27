@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState, FormEvent } from "react"
+import posthog from "posthog-js"
 import { JournalEntry } from "@/lib/types"
 import { Lang } from "@/lib/i18n"
 import { getEntries } from "@/lib/storage"
@@ -101,6 +102,7 @@ export function JoeyChat({ currentEntry, lang, onClose, initialCompanion = "joey
   function switchCompanion(id: CompanionId) {
     setLockedCompanion(null)
     if (id === activeCompanion) return
+    posthog.capture("companion_switched", { from: activeCompanion, to: id })
     setActiveCompanion(id)
     setMessages([{ id: makeId(), role: "assistant", content: getOpeningMessage(id, lang) }])
     setError(false)
@@ -119,6 +121,10 @@ export function JoeyChat({ currentEntry, lang, onClose, initialCompanion = "joey
   async function sendMessage(userInput: string) {
     const userMsg: Message = { id: makeId(), role: "user", content: userInput }
     const history = [...messages, userMsg]
+    posthog.capture("companion_message_sent", {
+      companion: activeCompanion,
+      message_count: history.filter((m) => m.role === "user").length,
+    })
     setMessages(history)
     setInput("")
     setError(false)

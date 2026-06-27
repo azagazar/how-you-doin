@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic"
 
 import { useEffect, useState, useCallback, useMemo, useRef, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import posthog from "posthog-js"
 import { CompanionId } from "@/lib/companions"
 import { getUserName, getGreetingKey, getTodayDate, getEntryByDate, saveEntry } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
@@ -11,7 +12,7 @@ import { isDemoMode, setDemoMode } from "@/lib/demo"
 import { EnergyKey } from "@/lib/types"
 import { uploadPhoto, deletePhoto } from "@/lib/photoStorage"
 import { ENERGIES, ENERGY_ORDER } from "@/lib/energies"
-import { getCouchStory } from "@/lib/couchStories"
+import { useCouchStory } from "@/lib/couchStories"
 import { useI18n } from "@/lib/i18n"
 import { EnergyCard } from "@/components/EnergyCard"
 import { CouchSelector } from "@/components/CouchSelector"
@@ -74,6 +75,10 @@ function CheckInPageContent() {
           redirect = "/login"
           return
         }
+        // Identify returning users who skip /auth/callback
+        if (session.user) {
+          posthog.identify(session.user.id, { email: session.user.email })
+        }
       }
 
       const name = getUserName()
@@ -129,6 +134,8 @@ function CheckInPageContent() {
       setSecondaryEnergy(undefined)
       return
     }
+    const slot = !primaryEnergy ? "primary" : "secondary"
+    posthog.capture("energy_selected", { energy: key, slot })
     if (!primaryEnergy) {
       setPrimaryEnergy(key)
     } else {
@@ -140,12 +147,19 @@ function CheckInPageContent() {
     const today = getTodayDate()
     const id = existingId ?? (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36))
     await saveEntry({ id, date: today, primaryEnergy, secondaryEnergy, content, createdAt: new Date().toISOString() })
+    posthog.capture("journal_entry_saved", {
+      is_update: !!existingId,
+      has_primary_energy: !!primaryEnergy,
+      has_secondary_energy: !!secondaryEnergy,
+      has_note: content.replace(/<[^>]*>/g, "").trim().length > 0,
+      has_photo: !!photoUrl,
+    })
     setExistingId(id)
     setSaved(true)
     setTimeout(() => router.push(`/history?entry=${id}`), 1400)
   }
 
-  const couchStory = getCouchStory(primaryEnergy, secondaryEnergy, lang)
+  const couchStory = useCouchStory(primaryEnergy, secondaryEnergy)
 
   function handleCameraClick() {
     fileInputRef.current?.click()
@@ -175,7 +189,9 @@ function CheckInPageContent() {
       }
       const { url } = await uploadPhoto(file, today)
       setPhotoUrl(url)
+      posthog.capture("photo_uploaded", { file_type: file.type })
     } catch (err) {
+      posthog.captureException(err instanceof Error ? err : new Error(String(err)))
       setPhotoError(err instanceof Error ? err.message : "Upload failed")
       setFrameVisible(false)
     } finally {
@@ -340,7 +356,7 @@ function CheckInPageContent() {
       </div>
 
       {/* Mobile Joey strip — above bottom nav, never overlaps content */}
-      <JoeyInvite onClick={() => setJoeyOpen(true)} lang={lang} />
+      <JoeyInvite onClick={() => { posthog.capture("companion_chat_opened", { source: "invite_strip" }); setJoeyOpen(true) }} lang={lang} />
 
       <BottomNav />
 

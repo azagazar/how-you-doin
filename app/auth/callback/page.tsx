@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import posthog from "posthog-js"
 import { supabase } from "@/lib/supabase"
 
 export default function AuthCallbackPage() {
@@ -13,6 +14,11 @@ export default function AuthCallbackPage() {
     // We just need to wait for the auth state to settle, then redirect.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
+        posthog.identify(session.user.id, {
+          email: session.user.email,
+          name: session.user.user_metadata?.full_name ?? session.user.user_metadata?.name,
+        })
+        posthog.capture("user_signed_in", { provider: "google" })
         router.replace("/")
       }
     })
