@@ -76,20 +76,21 @@ export async function POST(req: Request) {
 
   if (uploadError) return Response.json({ error: uploadError.message }, { status: 500 })
 
-  const { data: { publicUrl } } = admin.storage.from(BUCKET).getPublicUrl(path)
-
-  // Append cache-buster so browsers always fetch the new file after replace
-  const versionedUrl = `${publicUrl}?v=${Date.now()}`
-
   const { error: dbError } = await admin
     .from("journal_entries")
-    .update({ photo_url: versionedUrl })
+    .update({ photo_url: path })
     .eq("date", date)
     .eq("user_id", user.id)
 
   if (dbError) return Response.json({ error: dbError.message }, { status: 500 })
 
-  return Response.json({ url: versionedUrl })
+  const { data: signed, error: signError } = await admin.storage
+    .from(BUCKET)
+    .createSignedUrl(path, 60 * 60)
+
+  if (signError) return Response.json({ error: signError.message }, { status: 500 })
+
+  return Response.json({ url: signed.signedUrl })
 }
 
 export async function DELETE(req: Request) {

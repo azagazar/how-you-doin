@@ -28,7 +28,21 @@ type DbRow = {
   photo_url: string | null
 }
 
-function toEntry(row: DbRow): JournalEntry {
+const PHOTO_BUCKET = "journal-photos"
+
+async function resolvePhotoUrl(path: string | null): Promise<string | undefined> {
+  if (!path) return undefined
+  const { data, error } = await supabase.storage
+    .from(PHOTO_BUCKET)
+    .createSignedUrl(path, 60 * 60)
+  if (error) {
+    console.error("createSignedUrl error:", error)
+    return undefined
+  }
+  return data.signedUrl
+}
+
+async function toEntry(row: DbRow): Promise<JournalEntry> {
   return {
     id: row.id,
     date: row.date,
@@ -36,7 +50,7 @@ function toEntry(row: DbRow): JournalEntry {
     secondaryEnergy: (row.secondary_energy as JournalEntry["secondaryEnergy"]) ?? undefined,
     content: row.content,
     createdAt: row.created_at,
-    photoUrl: row.photo_url ?? undefined,
+    photoUrl: await resolvePhotoUrl(row.photo_url),
   }
 }
 
@@ -54,7 +68,7 @@ export async function getEntries(): Promise<JournalEntry[]> {
     console.error("getEntries error:", error)
     return []
   }
-  return (data as DbRow[]).map(toEntry)
+  return Promise.all((data as DbRow[]).map(toEntry))
 }
 
 export async function saveEntry(entry: JournalEntry): Promise<void> {
@@ -102,7 +116,7 @@ export async function getEntryByDate(date: string): Promise<JournalEntry | undef
     console.error("getEntryByDate error:", error)
     return undefined
   }
-  return data ? toEntry(data as DbRow) : undefined
+  return data ? await toEntry(data as DbRow) : undefined
 }
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
